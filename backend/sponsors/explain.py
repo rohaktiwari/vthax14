@@ -1,8 +1,8 @@
 """Grounded Gemini rewrite of an AnalyzeResponse. Never invents numbers.
 
 Off unless HOKIELENS_GEMINI=1 *and* GEMINI_API_KEY is set. Missing keys, timeouts,
-and ungrounded model output fall back to a deterministic template. The core
-planner (uvicorn main:app) does not import this module.
+and ungrounded model output fall back to a deterministic template. Ask Gemini
+chat reuses generate_gemini(); the eight planner routes stay offline.
 """
 
 from __future__ import annotations
@@ -32,7 +32,15 @@ TIMEOUT_S = 20.0
 
 
 class GeminiError(Exception):
-    """Outbound Gemini call failed. Callers fall back to the template."""
+    """Outbound Gemini call failed. Callers fall back to the template.
+
+    ``reason`` is ``quota`` (HTTP 429), ``timeout``, or ``error``. Never carries text
+    from the request or the key.
+    """
+
+    def __init__(self, message: str = "gemini call failed", *, reason: str = "error") -> None:
+        super().__init__(message)
+        self.reason = reason
 
 
 _NUMBER = re.compile(r"\d+(?:\.\d+)?")
@@ -215,21 +223,27 @@ def _parse_model_json(text: str) -> dict[str, Any] | None:
     return {"headline": headline.strip(), "cards": cleaned}
 
 
-def call_gemini(facts: dict[str, Any], *, key: str, model: str) -> str:
+def generate_gemini(
+    *,
+    system: str,
+    user: str,
+    key: str,
+    model: str,
+    json_mode: bool = False,
+    max_output_tokens: int = 2048,
+) -> str:
+    """POST to Gemini generateContent. The key travels in a header only; never logged."""
     url = GEMINI_URL.format(model=model)
+    config: dict[str, Any] = {
+        "temperature": 0.1,
+        "maxOutputTokens": max_output_tokens,
+    }
+    if json_mode:
+        config["responseMimeType"] = "application/json"
     body = {
-        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
-        "contents": [
-            {
-                "role": "user",
-                "parts": [{"text": json.dumps(facts, sort_keys=True)}],
-            }
-        ],
-        "generationConfig": {
-            "temperature": 0.1,
-            "maxOutputTokens": 2048,
-            "responseMimeType": "application/json",
-        },
+        "systemInstruction": {"parts": [{"text": system}]},
+        "contents": [{"role": "user", "parts": [{"text": user}]}],
+        "generationConfig": config,
     }
     headers = {"x-goog-api-key": key, "content-type": "application/json"}
     try:
@@ -240,8 +254,31 @@ def call_gemini(facts: dict[str, Any], *, key: str, model: str) -> str:
         parts = payload.get("candidates", [{}])[0].get("content", {}).get("parts", [])
         texts = [part.get("text", "") for part in parts if isinstance(part, dict)]
         return "\n".join(texts).strip()
-    except (httpx.HTTPError, OSError, ValueError, KeyError, TypeError) as exc:
+    except httpx.HTTPStatusError as exc:
+        reason = "quota" if exc.response.status_code == 429 else "error"
+        raise GeminiError("gemini call failed", reason=reason) from None
+    except httpx.TimeoutException:
+        raise GeminiError("gemini call failed", reason="timeout") from None
+    except (
+        httpx.HTTPError,
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        IndexError,
+        AttributeError,
+    ) as exc:
         raise GeminiError("gemini call failed") from exc
+
+
+def call_gemini(facts: dict[str, Any], *, key: str, model: str) -> str:
+    return generate_gemini(
+        system=SYSTEM_PROMPT,
+        user=json.dumps(facts, sort_keys=True),
+        key=key,
+        model=model,
+        json_mode=True,
+    )
 
 
 def explain_analysis(

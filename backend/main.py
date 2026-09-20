@@ -7,7 +7,9 @@ Run from the ``backend/`` directory::
 
 Startup loads and validates every committed data file exactly once (FastAPI
 lifespan) and stores the immutable ``DataContext`` on ``app.state.ctx``. The
-running server performs no network calls and never reads ``.env`` or API keys.
+eight planner routes stay offline. Optional Ask Gemini (``POST /api/chat``,
+hidden from OpenAPI) is the only path that may call Google, and only when
+``HOKIELENS_GEMINI=1`` and ``GEMINI_API_KEY`` are set.
 
 Delivery is complete through the final audit (PRD 11). Catalog, health, demo,
 schedule validation, commute, swap, the real risk engine, miss-week stress,
@@ -59,6 +61,7 @@ from models import (
 from risk import analyze as analyze_schedule
 from risk import miss_week_stress, professor_vibes
 from schedule import find_meeting_conflicts
+from sponsors.chat import register_chat_routes
 from sponsors.identity import agent_card_payload, registration_payload
 from stub_analyze import build_stub_analysis
 
@@ -357,6 +360,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def ans_registration() -> JSONResponse:
         return JSONResponse(registration_payload())
 
+    register_chat_routes(app, validate_schedule=validate_schedule, run_analysis=run_analysis)
     return app
 
 

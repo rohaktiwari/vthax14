@@ -81,10 +81,13 @@ Interactive contract: <http://127.0.0.1:8000/docs> (OpenAPI JSON at `/openapi.js
 
 ## Environment variables
 
-The server reads plain process environment variables only. It never loads
-`.env` and never reads API keys. Offline pipeline scripts also never load
-`.env`; the optional Google CLIs read `GOOGLE_MAPS_API_KEY` from the process
-environment only when `--allow-network` is passed.
+The eight planner routes read plain process environment variables only and make
+no outbound calls. The one optional exception is Ask Gemini (`POST /api/chat`),
+which reads `HOKIELENS_GEMINI` and `GEMINI_API_KEY` from the process
+environment (set them in the Render dashboard; never in the repo or any `VITE_`
+variable). Offline pipeline scripts never load `.env`; the optional Google CLIs
+read `GOOGLE_MAPS_API_KEY` from the process environment only when
+`--allow-network` is passed.
 
 | Variable | Default | Meaning |
 |---|---|---|
@@ -93,9 +96,9 @@ environment only when `--allow-network` is passed.
 | `HOKIELENS_STUB_ANALYZE` | `0` | `1` = `POST /api/analyze` (and swap/stress base analysis) return the isolated placeholder. `0` = the real `risk.analyze` engine. **Default is 0** (normal scoring). The stub is a compatibility/testing path, not production scoring. |
 | `HOKIELENS_PUBLIC_URL` | `http://127.0.0.1:8000` | Public origin written into the ANS agent card (`/.well-known/agent-card.json`). Not a secret. |
 | `GOOGLE_MAPS_API_KEY` | unset | **Pipeline only.** Required for `fetch_buildings.py` / `fetch_walk_matrix.py` when `--allow-network` is set. The running server never reads this variable. |
-| `HOKIELENS_GEMINI` | `0` | **Optional gateway/CLI only.** `1` plus `GEMINI_API_KEY` enables the grounded Gemini rewrite. `uvicorn main:app` never reads these. |
-| `GEMINI_API_KEY` | unset | **Optional gateway/CLI only.** Server-side. Never commit, never log, never send to the browser. |
-| `GEMINI_MODEL` | `gemini-3.6-flash` | Optional model override for the explain CLI/gateway. |
+| `HOKIELENS_GEMINI` | `0` | `1` plus `GEMINI_API_KEY` turns on Ask Gemini (`/api/chat`) and the explain CLI/gateway. Off by default; the planner never depends on it. |
+| `GEMINI_API_KEY` | unset | Server-side only. Never commit, never log, never send to the browser. |
+| `GEMINI_MODEL` | `gemini-3.6-flash` | Optional model override for Ask Gemini and the explain CLI/gateway. |
 | `ANS_RA_URL` | unset | Optional GoDaddy ANS Registration Authority base URL. Dry-run unless `--allow-network` and CSRs exist. |
 
 Boolean flags accept `1/0`, `true/false`, `yes/no`, `on/off` (case-insensitive).
@@ -143,13 +146,32 @@ workspace (Community Edition is enough). Run all cells. Point at 41 vs 84, then 
 swap delta. Optional: upload the CSVs to `/FileStore/hokielens/` so `display` reads
 the live export. Needs a human Databricks login; no workspace token is stored here.
 
-### MLH — Gemini API (not a chatbot)
+### MLH — Gemini API
 
-**What.** Gemini rewrites an `AnalyzeResponse` into three student-facing cards
-(Risk, Commute, Difficulty). It sees only facts already in that JSON. Invented
-numbers are rejected and the deterministic template is used instead. There is no
-free-form prompt and no "Ask HokieLens" chat (the frontend panel of that name is
-separate, deterministic copy).
+**Ask Gemini chat (`POST /api/chat`, `GET /api/chat/status`).** A backend proxy: the
+browser never sees the key. Hidden from OpenAPI, so the eight-route contract is
+unchanged. Each question is answered from a facts block built server-side from the
+student's CRNs: selected sections with readable times, the risk score and factors,
+every same-day walk with minutes, gap and verdict, and other sections of the same
+courses. Guards:
+
+- Limits: 500 chars per message, 8 messages, 4 student turns, 12 CRNs, 16 KB body,
+  12 requests/min per client (X-Forwarded-For) and 30/min overall (429 + `Retry-After`).
+- Injection: all client text is stripped of angle brackets and control characters,
+  override phrases are redacted, client-supplied "assistant" turns are labelled
+  unverified, and `focus` values must match catalog buildings/CRNs.
+- Grounding: a reply that names a number, CRN, clock time, or minute count that is
+  not in the facts, or that leaks the key or prompt, is dropped for a deterministic
+  answer built from the same facts.
+- Fallback: missing key, Gemini quota (429), timeout, or any error returns 200 with
+  `source: "unavailable"|"fallback"`, a `reason`, and a readable `notice`.
+
+Response: `{reply, source, reason, notice}`. Tests mock Gemini at the function and
+HTTP-transport level; nothing in the suite touches the network.
+
+**Explain CLI/gateway.** Gemini rewrites an `AnalyzeResponse` into three
+student-facing cards (Risk, Commute, Difficulty). It sees only facts already in that
+JSON. Invented numbers are rejected and the deterministic template is used instead.
 
 **Run** (still from `backend/`)
 
