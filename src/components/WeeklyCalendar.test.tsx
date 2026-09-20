@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { describe, expect, it } from "vitest";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { Section } from "../api/types";
 import { sectionFixture } from "../test/fixtures";
 import { ScheduleProvider, useSchedule } from "../context/ScheduleContext";
+import { renderInApp } from "../test/harness";
 import { DEFAULT_VISIBLE_END, DEFAULT_VISIBLE_START, getEventLayout } from "../lib/time";
 import WeeklyCalendar from "./WeeklyCalendar";
 
@@ -100,52 +101,59 @@ describe("WeeklyCalendar placement", () => {
   });
 });
 
-describe("WeeklyCalendar selected-schedule presentation", () => {
+describe("WeeklyCalendar summary", () => {
   it("shows the selected count and cached total credits", () => {
     renderCalendar([sectionFixture], "/?crns=90001");
 
-    const summary = screen.getByTestId("schedule-summary").textContent ?? "";
-    expect(summary).toContain("1 selected");
-    expect(summary).toContain("3 credit");
+    expect(screen.getByTestId("schedule-summary").textContent).toBe("1 course · 3 credits");
   });
 
-  it("lists cached meetings in chronological order", () => {
-    renderCalendar([sectionFixture, weekendSection], "/?crns=90001,90010");
-
-    const list = screen.getByRole("list", { name: /chronological order/i });
-    const items = within(list).getAllByRole("listitem");
-    expect(items).toHaveLength(4);
-
-    const text = items.map((item) => item.textContent ?? "").join("|");
-    expect(text.indexOf("CS 1114")).toBeLessThan(text.indexOf("BIOL 1105"));
-  });
-
-  it("removes a section from the selected list", async () => {
+  it("offers Download and Share but no schedule-clearing control", () => {
     renderCalendar([sectionFixture], "/?crns=90001");
 
-    fireEvent.click(screen.getByRole("button", { name: /remove section 90001/i }));
-
-    await waitFor(() => expect(screen.getByTestId("calendar-empty")).toBeTruthy());
+    expect(screen.getByTestId("print-schedule")).toBeTruthy();
+    expect(screen.getByTestId("share-schedule")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /clear/i })).toBeNull();
   });
 });
 
-describe("WeeklyCalendar event details", () => {
-  it("exposes instructor, location, and dates on keyboard focus", () => {
-    renderCalendar([sectionFixture], "/?crns=90001");
+describe("WeeklyCalendar opens course details in the center panel", () => {
+  function eventButton(day: string) {
+    return screen
+      .getByTestId("calendar-grid")
+      .querySelector(`[data-crn="90001"][data-day="${day}"]`) as HTMLElement;
+  }
 
-    const grid = screen.getByTestId("calendar-grid");
-    const button = grid.querySelector('[data-crn="90001"][data-day="M"]') as HTMLElement;
-    fireEvent.focus(button);
+  it("shows the course in the center view when a class is clicked", () => {
+    renderInApp(<WeeklyCalendar />, { route: "/?crns=90001", sections: [sectionFixture] });
+    expect(screen.getByTestId("view").textContent).toBe("overview");
 
-    const details = screen.getByTestId("event-details").textContent ?? "";
-    expect(details).toContain("Ada Lovelace");
-    expect(details).toContain("MCB 204");
-    expect(details).toContain("2026-08-24");
-    expect(details).toContain("2026-12-09");
+    fireEvent.click(eventButton("W"));
+
+    expect(screen.getByTestId("view").textContent).toBe("course:90001");
+    for (const day of ["M", "W", "F"]) {
+      expect(eventButton(day).getAttribute("aria-current")).toBe("true");
+    }
+  });
+
+  it("does not switch views just because a class received keyboard focus", () => {
+    renderInApp(<WeeklyCalendar />, { route: "/?crns=90001", sections: [sectionFixture] });
+
+    fireEvent.focus(eventButton("M"));
+
+    expect(screen.getByTestId("view").textContent).toBe("overview");
+  });
+
+  it("names the action and location for assistive technology", () => {
+    renderInApp(<WeeklyCalendar />, { route: "/?crns=90001", sections: [sectionFixture] });
+
+    expect(eventButton("M").getAttribute("aria-label")).toBe(
+      "CS 1114, Mon 10:10 AM–11:40 AM, MCB 204. Open details.",
+    );
   });
 });
 
-describe("WeeklyCalendar empty and unavailable states", () => {
+describe("WeeklyCalendar empty, loading, and unavailable states", () => {
   it("shows a clear empty state when nothing is selected", () => {
     renderCalendar([], "/");
 
@@ -153,16 +161,26 @@ describe("WeeklyCalendar empty and unavailable states", () => {
     expect(screen.queryByTestId("calendar-grid")).toBeNull();
   });
 
-  it("reports URL-restored CRNs with no cached details as unavailable", () => {
+  it("shows a loading placeholder while selected courses are still loading", () => {
+    render(
+      <MemoryRouter initialEntries={["/?crns=90001"]}>
+        <ScheduleProvider>
+          <WeeklyCalendar hydrating />
+        </ScheduleProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText("Loading your schedule").getAttribute("aria-busy")).toBe("true");
+    expect(screen.queryByTestId("calendar-unavailable")).toBeNull();
+  });
+
+  it("says details are unavailable, in plain words, once loading has finished", () => {
     renderCalendar([], "/?crns=90009");
 
     const note = screen.getByTestId("calendar-unavailable").textContent ?? "";
-    expect(note).toContain("90009");
-    expect(note).toMatch(/no section-by-CRN endpoint/i);
-
-    const summary = screen.getByTestId("schedule-summary").textContent ?? "";
-    expect(summary).toContain("1 selected");
-    expect(summary).toContain("0 credits");
+    expect(note).toMatch(/details for 1 selected course is unavailable/i);
+    expect(note).not.toMatch(/endpoint|api|json/i);
+    expect(screen.getByTestId("schedule-summary").textContent).toBe("1 course");
     expect(screen.queryByTestId("calendar-grid")).toBeNull();
   });
 });

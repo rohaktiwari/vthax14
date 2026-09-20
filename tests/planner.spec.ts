@@ -4,8 +4,6 @@ import {
   demoSchedulesFixture,
   healthFixture,
   sectionFixture,
-  stressFixture,
-  swapFixture,
   vibesFixture,
 } from "../src/test/fixtures";
 import type {
@@ -17,8 +15,9 @@ import type {
 } from "../src/api/types";
 
 /**
- * Frontend end-to-end smoke test (frontend PRD §15.3) plus responsive/state
- * coverage (§15.4).
+ * Frontend end-to-end smoke test (frontend PRD §15.3) plus state coverage
+ * (§15.4) for the desktop-only workspace: Your Courses, one center panel, the map
+ * with walking chips, and the calendar.
  *
  * The documented backend routes are fulfilled at the browser boundary with
  * contract-matching fixtures. No backend process is started and no Python or
@@ -244,7 +243,7 @@ async function stubApi(page: Page, options: StubOptions = {}): Promise<void> {
     demoDelayMs = 0,
     analyze = (crns: string[]) => ({
       status: 200,
-      body: crns.includes("90004") ? { ...analyzeFixture, risk_score: 25 } : analyzeFixture,
+      body: { ...analyzeFixture, sections: crns.map(sectionByCrn) },
     }),
   } = options;
 
@@ -268,46 +267,34 @@ async function stubApi(page: Page, options: StubOptions = {}): Promise<void> {
       const result = analyze(crnsFrom(request));
       return json(route, result.status, result.body);
     }
-    if (method === "POST" && path === "/api/swap") return json(route, 200, swapFixture);
-    if (method === "POST" && path === "/api/stress") return json(route, 200, stressFixture);
+    if (path === "/api/chat/status") return json(route, 200, { enabled: false });
+    if (method === "POST" && path === "/api/chat") {
+      return json(route, 200, {
+        reply: "This schedule scores 41 out of 100, a moderate week.",
+        source: "unavailable",
+        reason: "disabled",
+        notice: "Ask Gemini is not switched on for this demo, so this is HokieLens's own read.",
+      });
+    }
 
     return route.fallback();
   });
 }
 
+// Desktop only: a wide window and the smallest supported one.
 const VIEWPORTS = [
-  { label: "1440x900-desktop", width: 1440, height: 900 },
-  { label: "1024x768-tablet-landscape", width: 1024, height: 768 },
-  { label: "768x1024-tablet-portrait", width: 768, height: 1024 },
-  { label: "390x844-mobile", width: 390, height: 844 },
+  { label: "1440x900", width: 1440, height: 900 },
+  { label: "1280x720", width: 1280, height: 720 },
 ] as const;
 
-async function expectNoPageOverflow(page: Page): Promise<void> {
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow, "page-level horizontal overflow").toBeLessThanOrEqual(1);
-}
-
-/**
- * Reveal a panel at the current breakpoint. Mobile uses the bottom navigation;
- * the 768–1023px tablet layout hides search behind a header-triggered drawer.
- * At desktop widths (≥1024px) results live in the center column instead of the
- * sidebar and only replace the hero once a search runs, so "Search" submits an
- * empty query (the first page of the catalog).
- */
-async function openPanel(page: Page, width: number, tab: "Search" | "Schedule" | "Insights") {
-  if (width < 768) {
-    await page.getByRole("button", { name: tab, exact: true }).click();
-    return;
-  }
-  if (tab === "Search" && width < 1024) {
-    await page.getByRole("button", { name: "Search courses" }).click();
-    return;
-  }
-  if (tab === "Search") {
-    await page.getByRole("button", { name: "Search Classes" }).click();
-  }
+/** The page itself never scrolls, in either direction; panels scroll on their own. */
+async function expectPageDoesNotScroll(page: Page): Promise<void> {
+  const overflow = await page.evaluate(() => ({
+    x: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    y: document.documentElement.scrollHeight - document.documentElement.clientHeight,
+  }));
+  expect(overflow.x, "page-level horizontal overflow").toBeLessThanOrEqual(1);
+  expect(overflow.y, "page-level vertical overflow").toBeLessThanOrEqual(1);
 }
 
 async function screenshot(page: Page, testInfo: { outputPath: (name: string) => string }, name: string) {
@@ -318,7 +305,7 @@ async function screenshot(page: Page, testInfo: { outputPath: (name: string) => 
 // §15.3 End-to-end happy path
 // ---------------------------------------------------------------------------
 
-test("happy path: demo, calendar, analysis, commute, stress, swap, share", async ({ page }) => {
+test("happy path: demo week, per-course risk, walk chip, calendar details, chat, share", async ({ page }) => {
   // Force the clipboard fallback so the share flow is deterministic in CI.
   await page.addInitScript(() => {
     try {
@@ -329,164 +316,164 @@ test("happy path: demo, calendar, analysis, commute, stress, swap, share", async
   });
   await stubApi(page);
 
-  // 1. Open the planner. The startup catalog request hydrates section details.
-  //    Results stay out of the way (hero shown) until the person searches, then
-  //    they replace the hero in the center column.
+  // 1. Welcome screen: one primary action, an empty cart, and no header search.
   await page.goto("/");
-  await expect(page.locator('[data-testid="schedule-summary"]:visible')).toContainText("Plan, adjust");
-  await expect(page.getByText("Burruss Hall").filter({ visible: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Add section 90001/ })).toBeHidden();
-  await page.getByRole("button", { name: "Search Classes" }).click();
-  await expect(page.getByRole("region", { name: "Course search results" })).toBeVisible();
-  await expect(page.getByText("Burruss Hall").filter({ visible: true })).toBeHidden();
-  await expect(page.getByRole("button", { name: /Add section 90001/ })).toBeVisible();
-  await page.getByRole("button", { name: /Back to overview/ }).click();
-  await expect(page.getByText("Burruss Hall").filter({ visible: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /plan a week you can actually walk/i })).toBeVisible();
+  await expect(page.getByText("0 of 12 courses selected")).toBeVisible();
+  await expect(page.getByRole("banner").first().getByRole("searchbox")).toHaveCount(0);
 
   // 2. Load the brutal demo (CRNs come from GET /api/demo/schedules only).
-  await page.getByRole("button", { name: "The wall of pain" }).first().click();
+  await page.getByRole("button", { name: "The wall of pain" }).click();
   expect(new URL(page.url()).searchParams.get("crns")).toBe("90001,90003,90002,90005,90007");
+  await expect(page.getByText("5 of 12 courses selected")).toBeVisible();
+  await expect(page.locator('[data-testid="risk-score"]')).toHaveText("41");
 
-  // 3. Calendar events and risk analysis appear.
-  await expect(page.locator('[data-testid="calendar-grid"]:visible')).toBeVisible();
-  await expect(page.locator('[data-crn="90001"]:visible').first()).toBeVisible();
-  await expect(page.locator('[data-testid="risk-score"]:visible')).toHaveText("41");
+  // 3. Every course shows its own risk, taken from the backend analysis.
+  const cs1114 = page.getByRole("button", { name: /Open details for CS 1114/ });
+  await expect(cs1114).toContainText("High risk");
+  await expect(cs1114).toContainText("Impossible walk");
 
-  // 4. Open a commute warning (the interactive textual map equivalent).
-  await page.getByRole("button", { name: /CS 1114 \(MCB\).*CS 2114 \(WHI\)/ }).click();
-  const transition = page.locator('[data-testid="transition-details"]:visible');
-  await expect(transition).toContainText("Verdict: Impossible");
-  await expect(transition).toContainText("Walk 18 min");
+  // 4. Walking time is drawn on the map with the backend's verdict.
+  const chip = page.getByRole("button", { name: /CS 1114 to CS 2114: 18 minute walk, impossible/ });
+  await expect(chip).toContainText("18 min · Impossible");
+  await chip.click();
+  await expect(page.getByTestId("transition-details")).toContainText("Impossible");
 
-  // 5. Run the miss-week stress test.
-  await page.locator('[data-testid="run-stress"]:visible').click();
-  const stress = page.locator('[data-testid="stress-result"]:visible');
-  await expect(stress).toContainText("Original: 41");
-  await expect(stress).toContainText("Stressed: 46");
-  await expect(page.locator('[data-testid="stress-delta"]:visible')).toContainText(
-    "Risk increases by 5 points (41 → 46).",
-  );
-  await expect(page.locator('[data-testid="stress-disclaimer"]:visible')).toContainText(
-    "not a forecast",
-  );
+  // 5. Clicking a class on the calendar opens its details in the center panel.
+  await page.locator('[data-testid="calendar-grid"] [data-crn="90001"][data-day="M"]').click();
+  const details = page.getByRole("region", { name: "Course details" });
+  await expect(details.getByRole("heading", { name: "CS 1114" })).toBeVisible();
+  await expect(details).toContainText("Ada Lovelace");
+  await expect(details).toContainText("MCB 204");
+  await expect(details).toContainText("Impossible walk");
+  await details.getByRole("button", { name: "← Schedule overview" }).click();
+  await expect(page.getByRole("region", { name: "Schedule overview" })).toBeVisible();
 
-  // 6. Load the swap demo (confirmation required because a schedule exists).
-  await page.getByRole("button", { name: "Swap demo" }).first().click();
-  await page.locator('[data-testid="demo-confirm-accept"]:visible').click();
-  await page.locator('[data-testid="open-swap-from-demo"]:visible').first().click();
+  // 6. Ask Gemini answers from the server, with a plain-language notice when it is off.
+  await page.getByRole("button", { name: "Open Ask Gemini" }).click();
+  await page.getByRole("button", { name: "Why is my schedule risky?" }).click();
+  await expect(page.getByText("This schedule scores 41 out of 100, a moderate week.")).toBeVisible();
+  await expect(page.getByText(/not switched on for this demo/)).toBeVisible();
+  await page.keyboard.press("Escape");
 
-  // 7. Preview and apply the swap.
-  const workbench = page.locator('[data-testid="swap-workbench"]:visible');
-  await expect(workbench).toBeVisible();
-  await expect(page.locator('[data-testid="swap-drop"]:visible')).toHaveValue("90003");
-  await page.locator('[data-testid="swap-preview"]:visible').click();
-  await expect(page.locator('[data-testid="swap-result"]:visible')).toBeVisible();
-  await expect(page.locator('[data-testid="swap-delta"]:visible')).toContainText(
-    "Risk decreases by 16 points (41 → 25).",
-  );
-  await expect(page.locator('[data-testid="swap-summary-risk"]:visible')).toContainText("41 → 25");
-  await page.locator('[data-testid="swap-apply"]:visible').click();
-  await expect(workbench).toBeHidden();
+  // 7. Remove a course from the cart; the URL follows.
+  await page.getByRole("button", { name: "Remove ENGL 1105 (CRN 90007)" }).click();
+  expect(new URL(page.url()).searchParams.get("crns")).toBe("90001,90003,90002,90005");
 
-  // 8. URL and risk result update after the confirmed swap.
-  expect(new URL(page.url()).searchParams.get("crns")).toBe("90001,90004,90002");
-  await expect(page.locator('[data-testid="risk-score"]:visible')).toHaveText("25");
-
-  // 9. Copy the share link.
-  await page.locator('[data-testid="share-schedule"]:visible').click();
+  // 8. Copy the share link.
+  await page.locator('[data-testid="share-schedule"]').click();
   await expect(page.locator("p", { hasText: "copied to your clipboard" }).first()).toBeVisible();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copied).toContain("crns=90001,90004,90002");
+  expect(copied).toContain("crns=90001,90003,90002,90005");
+});
+
+test("adding a course: search from the cart, add a section, and finish", async ({ page }) => {
+  await stubApi(page);
+  await page.goto("/?crns=90001,90003");
+
+  await page.getByRole("region", { name: "Your Courses" }).getByRole("button", { name: "Add a course" }).click();
+  await expect(page.getByLabel("Search for a course")).toBeFocused();
+  await page.getByLabel("Search for a course").fill("phys");
+  await page.getByRole("button", { name: "Add section 90005" }).click();
+
+  expect(new URL(page.url()).searchParams.get("crns")).toBe("90001,90003,90005");
+  await expect(page.getByText("3 of 12 courses selected").first()).toBeVisible();
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByRole("region", { name: "Schedule overview" })).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
-// §15.4 Visual / responsive coverage
+// §15.4 Visual / state coverage (desktop viewports only)
 // ---------------------------------------------------------------------------
 
-test("empty state: no page overflow at required viewports", async ({ page }, testInfo) => {
+test("empty state: nothing overflows the page", async ({ page }, testInfo) => {
   await stubApi(page);
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await expect(page.locator('[data-testid="calendar-empty"]:visible')).toBeVisible();
-    await expect(page.locator('[data-testid="map-empty"]:visible')).toBeVisible();
-    await expectNoPageOverflow(page);
+    await expect(page.locator('[data-testid="calendar-empty"]')).toBeVisible();
+    await expect(page.locator('[data-testid="map-empty"]')).toBeVisible();
+    await expectPageDoesNotScroll(page);
     await screenshot(page, testInfo, `empty-${viewport.label}`);
   }
 });
 
-test("populated state: no page overflow at required viewports", async ({ page }, testInfo) => {
+test("populated state: the page never scrolls, and the calendar and cart are visible", async ({ page }, testInfo) => {
   await stubApi(page);
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/?crns=90001,90003,90002");
-    await expect(page.locator('[data-testid="calendar-grid"]:visible')).toBeVisible();
-    await expectNoPageOverflow(page);
+    await expect(page.locator('[data-testid="calendar-grid"]')).toBeVisible();
+    await expect(page.locator('[data-testid="risk-score"]')).toHaveText("41");
+    await expect(page.getByRole("region", { name: "Your Courses" })).toBeVisible();
+    await expectPageDoesNotScroll(page);
     await screenshot(page, testInfo, `populated-${viewport.label}`);
-    await openPanel(page, viewport.width, "Insights");
-    await expect(page.locator('[data-testid="risk-score"]:visible')).toHaveText("41");
-    await expectNoPageOverflow(page);
-    await screenshot(page, testInfo, `populated-insights-${viewport.label}`);
   }
 });
 
-test("conflict state lists every backend conflict without overflow", async ({ page }, testInfo) => {
+test("conflict state lists every backend conflict once, without overflow", async ({ page }, testInfo) => {
   await stubApi(page, { analyze: () => ({ status: 422, body: CONFLICT_BODY }) });
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/?crns=90001,90003");
-    await openPanel(page, viewport.width, "Insights");
-    const conflicts = page.getByTestId("conflict-item").filter({ visible: true });
-    // Two conflicts in the insights panel; the map panel adds two more on desktop/tablet.
-    await expect(conflicts).toHaveCount(viewport.width < 768 ? 2 : 4);
+    const conflicts = page.getByTestId("conflict-item");
+    await expect(conflicts).toHaveCount(2);
     await expect(conflicts.first()).toContainText("90001 and 90003 overlap");
-    await expectNoPageOverflow(page);
+    await expect(page.getByTestId("map-analysis-error")).toBeVisible();
+    await expectPageDoesNotScroll(page);
     await screenshot(page, testInfo, `conflict-${viewport.label}`);
   }
 });
 
-test("API-error state shows a retry surface without overflow", async ({ page }, testInfo) => {
+test("API-error state shows a plain retry surface", async ({ page }, testInfo) => {
   await stubApi(page, { searchStatus: 500, searchBody: { detail: "Catalog unavailable" } });
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await openPanel(page, viewport.width, "Search");
-    await expect(page.getByText("Could not load courses").filter({ visible: true }).first()).toBeVisible();
+    await page.getByRole("button", { name: "Search for a course" }).click();
+    await page.getByRole("button", { name: "Browse all courses" }).click();
+    await expect(page.getByText("Could not load courses")).toBeVisible();
     await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeVisible();
-    await expectNoPageOverflow(page);
+    await expectPageDoesNotScroll(page);
     await screenshot(page, testInfo, `api-error-${viewport.label}`);
   }
 });
 
-test("loading state renders busy surfaces without overflow", async ({ page }, testInfo) => {
+test("loading state renders busy surfaces", async ({ page }, testInfo) => {
   await stubApi(page, { searchDelayMs: 1500, demoDelayMs: 1500 });
   for (const viewport of VIEWPORTS) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await openPanel(page, viewport.width, "Search");
-    await expect(page.locator('[aria-busy="true"]:visible').first()).toBeVisible();
-    await expectNoPageOverflow(page);
+    await expect(page.locator('[aria-busy="true"]').first()).toBeVisible();
+    await expectPageDoesNotScroll(page);
     await screenshot(page, testInfo, `loading-${viewport.label}`);
   }
 });
 
-test("keyboard-only user can reach search and the help panel", async ({ page }) => {
+test("keyboard-only user can reach search, open a class, and use the chat", async ({ page }) => {
   await stubApi(page);
-  await page.goto("/");
+  await page.goto("/?crns=90001,90003");
 
   await page.keyboard.press("Tab");
   const skipLink = page.getByRole("link", { name: "Skip to main content" });
   await expect(skipLink).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/#main-content$/);
+  await expect(page).toHaveURL(/#main-content/);
 
-  await page.getByLabel("Search for a course").focus();
+  await page.getByRole("button", { name: "Add a course" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByLabel("Search for a course")).toBeFocused();
   await page.keyboard.type("CS");
-  await expect(page.getByRole("button", { name: "Search Classes" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add section 90004" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Open Ask HokieLens help" }).click();
-  const help = page.getByRole("dialog", { name: "Ask HokieLens" });
-  await expect(help).toBeVisible();
+  await page.getByRole("button", { name: "Done" }).click();
+  await page.getByRole("button", { name: /CS 1114, Mon .*Open details/ }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("region", { name: "Course details" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Open Ask Gemini" }).click();
+  const chat = page.getByRole("dialog", { name: "Ask Gemini" });
+  await expect(chat).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(help).toBeHidden();
+  await expect(chat).toBeHidden();
 });

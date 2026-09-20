@@ -54,6 +54,8 @@ def test_openapi_still_exactly_eight_api_routes(strict_client: TestClient) -> No
     assert documented == EIGHT_ENDPOINTS
     assert "/.well-known/agent-card.json" not in spec["paths"]
     assert "/api/explain" not in spec["paths"]
+    assert "/api/chat" not in spec["paths"]
+    assert "/api/chat/status" not in spec["paths"]
 
 
 def test_ans_well_known_is_public_and_keyless(strict_client: TestClient) -> None:

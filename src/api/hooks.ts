@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { apiGet, apiPost } from "./client";
 import { queryKeys } from "./queryKeys";
 import { MAX_CRNS } from "../lib/schedule";
@@ -10,19 +10,16 @@ import type {
   CourseSearchResponse,
   DemoSchedulesResponse,
   HealthResponse,
-  StressRequest,
-  StressResponse,
-  SwapRequest,
-  SwapResponse,
   VibesResponse,
+  ChatRequest,
+  ChatResponse,
+  ChatStatusResponse,
 } from "./types";
 
 /**
- * TanStack Query hooks for the eight documented endpoints only.
- *
- * Phase 2 wires the two startup queries (health, demo schedules). The remaining
- * hooks are typed and ready but are not used by UI components yet; no search,
- * selection, calendar, or analysis behavior is built in this phase.
+ * TanStack Query hooks for the documented planner endpoints the UI uses, plus the
+ * optional Ask Gemini chat routes (hidden from OpenAPI; default off). The backend
+ * still serves /api/swap and /api/stress; the UI no longer calls them.
  */
 
 /** GET /api/health — header status indicator and startup diagnostics. */
@@ -79,28 +76,15 @@ export function useAnalyze() {
  * key includes the ordered CRN list, so a schedule change requests a fresh
  * analysis and cached results for other schedules are not reused.
  */
-export function useAnalysis(crns: string[]) {
+export function useAnalysis(crns: string[], options: { keepPrevious?: boolean } = {}) {
   return useQuery({
     queryKey: queryKeys.analysis(crns),
     queryFn: ({ signal }) => apiPost<AnalyzeResponse>("/analyze", { crns }, { signal }),
     enabled: crns.length >= 2 && crns.length <= MAX_CRNS,
     retry: false,
-  });
-}
-
-/** POST /api/swap — before/after comparison; caller confirms before applying. */
-export function useSwap() {
-  return useMutation({
-    mutationKey: queryKeys.swap,
-    mutationFn: (body: SwapRequest) => apiPost<SwapResponse>("/swap", body),
-  });
-}
-
-/** POST /api/stress — miss-a-week catch-up heuristic. */
-export function useStress() {
-  return useMutation({
-    mutationKey: queryKeys.stress,
-    mutationFn: (body: StressRequest) => apiPost<StressResponse>("/stress", body),
+    // Keep the last result on screen while a new selection is analyzed. Callers must
+    // check `isPlaceholderData` before treating it as the current schedule.
+    placeholderData: options.keepPrevious ? keepPreviousData : undefined,
   });
 }
 
@@ -111,5 +95,23 @@ export function useProfessorVibes(surname: string) {
     queryFn: ({ signal }) =>
       apiGet<VibesResponse>(`/professors/${encodeURIComponent(surname)}/vibes`, { signal }),
     enabled: surname.trim().length > 0,
+  });
+}
+
+/** GET /api/chat/status — whether the server has a Gemini key configured. */
+export function useChatStatus(enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.chatStatus,
+    queryFn: ({ signal }) => apiGet<ChatStatusResponse>("/chat/status", { signal }),
+    enabled,
+    retry: false,
+  });
+}
+
+/** POST /api/chat — grounded Gemini reply; never retries. 25s budget for the model. */
+export function useChat() {
+  return useMutation({
+    mutationKey: queryKeys.chat,
+    mutationFn: (body: ChatRequest) => apiPost<ChatResponse>("/chat", body, { timeoutMs: 25_000 }),
   });
 }

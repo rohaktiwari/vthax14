@@ -5,8 +5,6 @@ import type {
   DemoSchedulesResponse,
   HealthResponse,
   Section,
-  StressResponse,
-  SwapResponse,
   VibesResponse,
 } from "../api/types";
 
@@ -168,31 +166,6 @@ export const analyzeFixture: AnalyzeResponse = {
     data_notes: ["Grade data is synthetic and representative."],
     heuristic: true,
   },
-};
-
-export const swapFixture: SwapResponse = {
-  before: analyzeFixture,
-  after: { ...analyzeFixture, risk_score: 25 },
-  delta: -16,
-  summary: { risk: "41 → 25", resolved_warnings: 1, new_warnings: 0 },
-};
-
-export const stressFixture: StressResponse = {
-  analysis: analyzeFixture,
-  scenario: { type: "miss_week", week: 8 },
-  original_risk: 41,
-  stressed_risk: 46,
-  delta: 5,
-  penalties: [
-    {
-      crn: "90001",
-      course_id: "CS 1114",
-      points: 6,
-      impact: "medium",
-      reason: "High instructor difficulty and four credits increase catch-up cost.",
-    },
-  ],
-  meta: { heuristic: true, note: "This scenario is a deterministic planning heuristic, not a prediction." },
 };
 
 export const vibesFixture: VibesResponse = {

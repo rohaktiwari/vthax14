@@ -7,7 +7,9 @@ Run from the ``backend/`` directory::
 
 Startup loads and validates every committed data file exactly once (FastAPI
 lifespan) and stores the immutable ``DataContext`` on ``app.state.ctx``. The
-running server performs no network calls and never reads ``.env`` or API keys.
+eight planner routes stay offline. Optional Ask Gemini (``POST /api/chat``,
+hidden from OpenAPI) is the only path that may call Google, and only when
+``HOKIELENS_GEMINI=1`` and ``GEMINI_API_KEY`` are set.
 
 Delivery is complete through the final audit (PRD 11). Catalog, health, demo,
 schedule validation, commute, swap, the real risk engine, miss-week stress,
@@ -17,6 +19,8 @@ are live. ``/api/analyze`` and ``/api/swap`` validate first, then call
 compatibility path (same ``AnalyzeResponse`` contract); default is off.
 ``/api/stress`` reuses that same analysis path and adds the PRD 6.5 penalty.
 Pipeline scripts live in ``scripts/`` and are never imported by this module.
+Optional ANS well-known documents are served from ``sponsors/ans`` with no
+outbound calls.
 """
 
 from __future__ import annotations
@@ -57,6 +61,8 @@ from models import (
 from risk import analyze as analyze_schedule
 from risk import miss_week_stress, professor_vibes
 from schedule import find_meeting_conflicts
+from sponsors.chat import register_chat_routes
+from sponsors.identity import agent_card_payload, registration_payload
 from stub_analyze import build_stub_analysis
 
 logger = logging.getLogger("hokielens")
@@ -340,6 +346,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def demo_schedules(ctx: Ctx) -> DemoSchedulesResponse:
         return ctx.demo_schedules
 
+    # ANS protocol card. Static identity, no keys, no outbound calls. Hidden
+    # from OpenAPI so the eight-route frontend contract is unchanged.
+    @app.get("/.well-known/agent-card.json", include_in_schema=False)
+    def ans_agent_card() -> JSONResponse:
+        return JSONResponse(agent_card_payload())
+
+    @app.get("/.well-known/ans/agent.json", include_in_schema=False)
+    def ans_agent_alias() -> JSONResponse:
+        return JSONResponse(agent_card_payload())
+
+    @app.get("/.well-known/ans/registration.json", include_in_schema=False)
+    def ans_registration() -> JSONResponse:
+        return JSONResponse(registration_payload())
+
+    register_chat_routes(app, validate_schedule=validate_schedule, run_analysis=run_analysis)
     return app
 
 

@@ -1,21 +1,21 @@
-import { useCourseSearch } from "../context/CourseSearchContext";
-import EmptyState from "./EmptyState";
-import HeroPanel from "./HeroPanel";
-import SearchResultsPanel from "./SearchResultsPanel";
+import { useCenterView } from "../context/CenterViewContext";
+import { useSchedule } from "../context/ScheduleContext";
+import AddCourses from "./AddCourses";
+import CourseDetails from "./CourseDetails";
+import ScheduleOverview from "./ScheduleOverview";
+import Welcome from "./Welcome";
 
 /**
- * Desktop center column. Shows the Burruss hero and onboarding steps until the
- * person searches, then swaps them for the course results.
+ * Center column. Shows exactly one thing: the add-a-course search, the welcome
+ * screen while nothing is selected, the details of the course picked on the
+ * calendar or in Your Courses, or the schedule overview.
  */
 export default function CenterPanel() {
-  const { isSearchActive } = useCourseSearch();
+  const { crns } = useSchedule();
+  const { view } = useCenterView();
 
-  if (isSearchActive) return <SearchResultsPanel />;
-
-  return (
-    <>
-      <HeroPanel />
-      <EmptyState />
-    </>
-  );
+  if (view.kind === "add") return <AddCourses />;
+  if (crns.length === 0) return <Welcome />;
+  if (view.kind === "course") return <CourseDetails />;
+  return <ScheduleOverview />;
 }

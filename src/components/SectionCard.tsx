@@ -1,5 +1,7 @@
 import type { Section } from "../api/types";
-import { formatMeetingSummary, formatModality } from "../lib/time";
+import { meetingLines } from "../lib/sectionText";
+import { BTN_PRIMARY, BTN_SECONDARY } from "../lib/ui";
+import Badge from "./Badge";
 import InstructorLinks from "./InstructorLinks";
 
 interface SectionCardProps {
@@ -9,24 +11,10 @@ interface SectionCardProps {
   onToggle: (section: Section) => void;
 }
 
-function locationLabel(section: Section): string {
-  const buildings = Array.from(
-    new Set(
-      section.meetings
-        .map((meeting) => meeting.building)
-        .filter((building): building is string => Boolean(building)),
-    ),
-  );
-  return buildings.length > 0 ? buildings.join(", ") : formatModality(section.modality);
-}
-
-function meetingLabel(section: Section): string {
-  if (section.meetings.length === 0) return "No scheduled meetings";
-  return section.meetings.map(formatMeetingSummary).join(" · ");
-}
-
-/** One section row with add/remove, meeting summary, and seat snapshot copy. */
+/** One section row: who, when, where, seats, and a big Add or Remove button. */
 export default function SectionCard({ section, selected, disabled, onToggle }: SectionCardProps) {
+  const { available, max } = section.seats;
+
   return (
     <li
       className={`rounded-xl border p-3 shadow-sm transition-colors ${
@@ -34,18 +22,22 @@ export default function SectionCard({ section, selected, disabled, onToggle }: S
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-mono text-xs text-ink-secondary">CRN {section.crn}</p>
-          <p className="truncate text-sm font-medium text-ink-primary">
+        <div className="min-w-0 space-y-0.5">
+          <p className="flex flex-wrap items-center gap-2 text-base font-medium text-ink-primary">
             <InstructorLinks names={section.instructor_names} />
+            {selected ? <Badge tone="success">Added</Badge> : null}
           </p>
-          <p className="mt-0.5 text-xs text-ink-secondary">{meetingLabel(section)}</p>
-          <p className="text-xs text-ink-secondary">{locationLabel(section)}</p>
+          {meetingLines(section).map((line) => (
+            <p key={line} className="text-sm text-ink-secondary">
+              {line}
+            </p>
+          ))}
           <p
-            className="mt-1 text-xs text-ink-secondary"
+            className="text-sm text-ink-secondary"
             title="Seat counts reflect the committed catalog snapshot."
           >
-            Seats: {section.seats.available} of {section.seats.max} available
+            CRN <span className="font-mono">{section.crn}</span> ·{" "}
+            {available === 0 ? "Full" : `${available} of ${max} seats open`}
             <span className="sr-only">. Seat counts reflect the committed catalog snapshot.</span>
           </p>
         </div>
@@ -55,11 +47,7 @@ export default function SectionCard({ section, selected, disabled, onToggle }: S
           aria-pressed={selected}
           disabled={!selected && disabled}
           onClick={() => onToggle(section)}
-          className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors ${
-            selected
-              ? "border border-maroon bg-soft-maroon text-maroon hover:bg-maroon hover:text-white"
-              : "bg-maroon text-white hover:bg-maroon-dark disabled:cursor-not-allowed disabled:opacity-50"
-          }`}
+          className={`shrink-0 ${selected ? BTN_SECONDARY : BTN_PRIMARY}`}
         >
           {selected ? "Remove" : "Add"}
         </button>

@@ -12,6 +12,19 @@ export function formatMinutes(minutes: number): string {
   return `${hours12}:${String(mins).padStart(2, "0")} ${period}`;
 }
 
+/** e.g. `2026-08-24` to `2026-12-09` becomes `Aug 24 – Dec 9, 2026`. Parsed as UTC so no timezone shifts the day. */
+export function formatDateRange(start: string, end: string): string {
+  const parse = (value: string) => {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(Date.UTC(year ?? 1970, (month ?? 1) - 1, day ?? 1));
+  };
+  const from = parse(start);
+  const to = parse(end);
+  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return `${start} to ${end}`;
+  const short = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  return `${short(from)} – ${short(to)}, ${to.getUTCFullYear()}`;
+}
+
 /** Join weekday initials, e.g. `["M","W","F"]` -> `MWF`. */
 export function formatDays(days: Weekday[]): string {
   return days.join("");

@@ -1,94 +1,168 @@
 import { describe, expect, it } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { MemoryRouter } from "react-router-dom";
 import { API_BASE_URL } from "../api/client";
-import type { CourseGroup } from "../api/types";
-import { CourseSearchProvider } from "../context/CourseSearchContext";
-import { ScheduleProvider } from "../context/ScheduleContext";
-import { sectionFixture } from "../test/fixtures";
+import type { AnalyzeResponse, Section } from "../api/types";
+import { useCenterView } from "../context/CenterViewContext";
+import { makeSection, renderInApp } from "../test/harness";
 import { server } from "../test/msw/server";
+import { analyzeFixture, sectionFixture } from "../test/fixtures";
 import CenterPanel from "./CenterPanel";
-import SearchSidebar from "./SearchSidebar";
 
-const group: CourseGroup = {
-  course_id: "CS 1114",
-  title: "Intro to Software Design",
-  credits: 3,
-  sections: [{ ...sectionFixture, crn: "90001", course_id: "CS 1114" }],
-};
+const meeting = sectionFixture.meetings[0]!;
+const cs = makeSection(sectionFixture, { crn: "90001", course_id: "CS 3114", title: "Data Structures" });
+const math = makeSection(sectionFixture, {
+  crn: "90003",
+  course_id: "MATH 2534",
+  title: "Discrete Mathematics",
+  meetings: [{ ...meeting, building: "WHI", room: "230", start_min: 670, end_min: 720 }],
+});
+const sections: Section[] = [cs, math];
+const analysis: AnalyzeResponse = { ...analyzeFixture, sections };
 
-function renderDesktopShell() {
-  server.use(
-    http.get(`${API_BASE_URL}/courses/search`, () => HttpResponse.json({ courses: [group] })),
-  );
-  const client = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
-  return render(
-    <QueryClientProvider client={client}>
-      <MemoryRouter>
-        <ScheduleProvider>
-          <CourseSearchProvider>
-            <SearchSidebar showResults={false} />
-            <CenterPanel />
-          </CourseSearchProvider>
-        </ScheduleProvider>
-      </MemoryRouter>
-    </QueryClientProvider>,
+function OpenCourse({ crn }: { crn: string }) {
+  const { showCourse } = useCenterView();
+  return (
+    <button type="button" onClick={() => showCourse(crn)}>
+      open {crn}
+    </button>
   );
 }
 
-describe("CenterPanel", () => {
-  it("shows the hero before any search and keeps results out of the sidebar", async () => {
-    renderDesktopShell();
+function renderPanel(route: string, extra?: { crn: string }) {
+  server.use(http.post(`${API_BASE_URL}/analyze`, () => HttpResponse.json(analysis)));
+  return renderInApp(
+    <>
+      <CenterPanel />
+      {extra ? <OpenCourse crn={extra.crn} /> : null}
+    </>,
+    { route, sections },
+  );
+}
 
-    expect(screen.getByText("Burruss Hall")).toBeTruthy();
-    expect(screen.queryByRole("region", { name: /course search results/i })).toBeNull();
-    // The catalog still loads in the background, but no results render yet.
-    expect(screen.queryByText("CS 1114")).toBeNull();
+describe("CenterPanel with nothing selected", () => {
+  it("welcomes the student with one primary action and two demo weeks", async () => {
+    renderPanel("/");
+
+    expect(screen.getByRole("heading", { name: /plan a week you can actually walk/i })).toBeTruthy();
+    const search = screen.getByRole("button", { name: "Search for a course" });
+    expect(search.className).toContain("bg-maroon");
+    expect(await screen.findByRole("button", { name: "Balanced schedule" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "The wall of pain" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /swap/i })).toBeNull();
   });
 
-  it("replaces the hero with results in the center panel when the user searches", async () => {
-    renderDesktopShell();
+  it("opens the add-a-course view from the welcome screen", () => {
+    renderPanel("/");
 
-    fireEvent.click(screen.getByRole("button", { name: "Search Classes" }));
+    fireEvent.click(screen.getByRole("button", { name: "Search for a course" }));
 
-    const results = await screen.findByRole("region", { name: /course search results/i });
-    expect(await screen.findByText("CS 1114")).toBeTruthy();
-    expect(results.textContent).toContain("CS 1114");
-    expect(screen.queryByText("Burruss Hall")).toBeNull();
+    expect(screen.getByTestId("view").textContent).toBe("add");
+    expect(screen.getByRole("region", { name: "Add a course" })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText("Search for a course"));
   });
 
-  it("searches as the user types and returns to the overview when the text is cleared", async () => {
-    renderDesktopShell();
-    const input = screen.getByLabelText(/search for a course/i);
+  it("loads a demo week from the API's CRNs", async () => {
+    renderPanel("/");
 
-    fireEvent.change(input, { target: { value: "CS" } });
-    expect(await screen.findByRole("region", { name: /course search results/i })).toBeTruthy();
+    fireEvent.click(await screen.findByTestId("demo-easy"));
 
-    fireEvent.change(input, { target: { value: "" } });
-    await waitFor(() => expect(screen.getByText("Burruss Hall")).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId("crns").textContent).toBe("90001,90003,90008"));
+    expect(await screen.findByRole("region", { name: "Schedule overview" })).toBeTruthy();
+  });
+});
+
+describe("CenterPanel with courses selected", () => {
+  it("shows the schedule overview by default", async () => {
+    renderPanel("/?crns=90001,90003");
+
+    expect(await screen.findByTestId("risk-score")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "Schedule overview" })).toBeTruthy();
+    expect(screen.queryByRole("region", { name: "Course details" })).toBeNull();
   });
 
-  it("'Back to overview' clears the search and restores the hero", async () => {
-    renderDesktopShell();
+  it("shows a course's details in place of the overview when one is opened, and goes back", async () => {
+    renderPanel("/?crns=90001,90003", { crn: "90001" });
+    await screen.findByTestId("risk-score");
 
-    fireEvent.click(screen.getByRole("button", { name: "Search Classes" }));
-    await screen.findByText("CS 1114");
+    fireEvent.click(screen.getByRole("button", { name: "open 90001" }));
 
-    fireEvent.click(screen.getByRole("button", { name: /back to overview/i }));
-    expect(await screen.findByText("Burruss Hall")).toBeTruthy();
-    expect((screen.getByLabelText(/search for a course/i) as HTMLInputElement).value).toBe("");
+    const details = await screen.findByRole("region", { name: "Course details" });
+    expect(within(details).getByRole("heading", { name: "CS 3114" })).toBeTruthy();
+    expect(details.textContent).toContain("Data Structures");
+    expect(details.textContent).toContain("3 credits");
+    expect(details.textContent).toContain("Lecture");
+    expect(details.textContent).toContain("In person");
+    expect(details.textContent).toContain("90001");
+    expect(details.textContent).toContain("42 of 120 open");
+    expect(details.textContent).toContain("MWF 10:10 AM–11:40 AM");
+    expect(details.textContent).toContain("MCB 204 · Aug 24 – Dec 9, 2026");
+    expect(within(details).getByRole("button", { name: "View instructor details for Ada Lovelace" })).toBeTruthy();
+    expect(screen.queryByRole("region", { name: "Schedule overview" })).toBeNull();
+
+    fireEvent.click(within(details).getByRole("button", { name: "← Schedule overview" }));
+    expect(await screen.findByRole("region", { name: "Schedule overview" })).toBeTruthy();
+    expect(screen.getByTestId("view").textContent).toBe("overview");
   });
 
-  it("can add a section straight from the center panel", async () => {
-    renderDesktopShell();
+  it("explains why the course is flagged using the backend's own sentences", async () => {
+    renderPanel("/?crns=90001,90003", { crn: "90001" });
+    fireEvent.click(screen.getByRole("button", { name: "open 90001" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Search Classes" }));
-    fireEvent.click(await screen.findByRole("button", { name: /add section 90001/i }));
+    const details = await screen.findByRole("region", { name: "Course details" });
+    await waitFor(() => expect(within(details).getByText("High risk")).toBeTruthy());
+    expect(details.textContent).toContain("Impossible walk");
+    expect(details.textContent).toContain("MCB -> WHI is an 18-minute walk; the schedule provides 10 minutes.");
+    expect(details.textContent).toContain("Heavy-course load");
+  });
 
-    expect(await screen.findByRole("button", { name: /remove section 90001/i })).toBeTruthy();
+  it("asks for a second course instead of guessing risk when only one is selected", () => {
+    renderPanel("/?crns=90001", { crn: "90001" });
+    fireEvent.click(screen.getByRole("button", { name: "open 90001" }));
+
+    const details = screen.getByRole("region", { name: "Course details" });
+    expect(details.textContent).toContain("Add one more course to see how this one fits your week.");
+    expect(within(details).queryByText(/risk$/)).toBeNull();
+  });
+
+  it("removes the open course and falls back to the overview", async () => {
+    renderPanel("/?crns=90001,90003", { crn: "90001" });
+    fireEvent.click(screen.getByRole("button", { name: "open 90001" }));
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Remove CS 3114 (CRN 90001) from Your Courses" }),
+    );
+
+    await waitFor(() => expect(screen.getByTestId("crns").textContent).toBe("90003"));
+    expect(screen.getByTestId("view").textContent).toBe("overview");
+    expect(screen.queryByRole("region", { name: "Course details" })).toBeNull();
+  });
+
+  it("marks a full section and folds long descriptions behind a control", () => {
+    const full = makeSection(sectionFixture, {
+      crn: "90005",
+      course_id: "PHYS 2305",
+      seats: { max: 30, available: 0 },
+      description: "Mechanics and waves.",
+      prereqs_text: "Prerequisite: MATH 1225.",
+      grade_mode: "pass_fail",
+    });
+    server.use(http.post(`${API_BASE_URL}/analyze`, () => HttpResponse.json(analysis)));
+    renderInApp(
+      <>
+        <CenterPanel />
+        <OpenCourse crn="90005" />
+      </>,
+      { route: "/?crns=90005", sections: [full] },
+    );
+    fireEvent.click(screen.getByRole("button", { name: "open 90005" }));
+
+    const details = screen.getByRole("region", { name: "Course details" });
+    expect(details.textContent).toContain("Full (0 of 30 open)");
+    expect(details.textContent).toContain("Pass/fail");
+    const notes = within(details).getByText("Description and notes").closest("details") as HTMLDetailsElement;
+    expect(notes.open).toBe(false);
+    expect(notes.textContent).toContain("Mechanics and waves.");
+    expect(notes.textContent).toContain("Prerequisite: MATH 1225.");
   });
 });

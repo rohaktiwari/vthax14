@@ -1,11 +1,3 @@
-import { useSchedule } from "../context/ScheduleContext";
-import { sumCredits } from "../lib/schedule";
-
-interface HeroPanelProps {
-  /** Compact banner rendering for the tablet breakpoint (PRD §6.2). */
-  compact?: boolean;
-}
-
 /** CSS-only Burruss-inspired skyline. No image assets are shipped in this phase. */
 function Skyline() {
   const silhouette = "#2b1420";
@@ -58,89 +50,31 @@ function Skyline() {
   );
 }
 
-/**
- * Hero panel (PRD §7.5, §11.2, §11.3).
- *
- * With no selection it shows the Burruss visual and brand mission. With a
- * selection it keeps the image as a reduced-height header and prioritizes the
- * selected count and total credits from cached section objects. Analysis is not
- * part of this phase; with a single cached section it shows the PRD prompt
- * instead.
- */
-export default function HeroPanel({ compact = false }: HeroPanelProps) {
-  const { selectedSections, unavailableCrns } = useSchedule();
-  const selectedCount = selectedSections.length;
-  const credits = sumCredits(selectedSections);
-  const hasSelection = selectedCount > 0 || unavailableCrns.length > 0;
-
+/** Burruss-inspired welcome banner, shown only while no courses are selected. */
+export default function HeroPanel() {
   return (
     <section
       aria-label="HokieLens overview"
-      className={`hero-sky relative overflow-hidden rounded-2xl border border-line shadow-card-lg ${
-        hasSelection ? "min-h-40" : compact ? "min-h-44" : "min-h-[26rem] lg:min-h-[32rem]"
-      }`}
+      className="hero-sky relative min-h-56 overflow-hidden rounded-2xl border border-line shadow-card-lg"
     >
       <Skyline />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 ring-1 ring-inset ring-white/10"
-      />
+      <div aria-hidden="true" className="absolute inset-0 ring-1 ring-inset ring-white/10" />
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/80 via-black/25 to-transparent"
       />
-      {/* Thin burnt-orange brand accent along the top edge. */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-vt-orange via-vt-orange/70 to-transparent"
       />
-      <div
-        className={`relative z-10 flex h-full flex-col justify-end text-white ${
-          compact ? "p-5" : "p-6 sm:p-8"
-        }`}
-      >
-        <span className="mb-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-white/90 backdrop-blur-sm">
+      <div className="relative z-10 flex h-full min-h-56 flex-col justify-end p-6 text-white">
+        <span className="mb-3 inline-flex w-fit items-center rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/90 backdrop-blur-sm">
           Virginia Tech
         </span>
-        <p
-          className={`font-extrabold leading-none tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)] ${
-            compact ? "text-2xl" : "text-4xl sm:text-5xl"
-          }`}
-        >
+        <p className="text-4xl font-extrabold leading-none tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]">
           Burruss Hall
         </p>
-
-        {hasSelection ? (
-          <div className="mt-3" data-testid="hero-selection">
-            <p className="text-lg font-semibold text-white/95">
-              {selectedCount} section{selectedCount === 1 ? "" : "s"} selected · {credits} credit
-              {credits === 1 ? "" : "s"}
-            </p>
-            {unavailableCrns.length > 0 ? (
-              <p className="mt-1 text-xs text-white/85">
-                {unavailableCrns.length} selected section
-                {unavailableCrns.length === 1 ? "" : "s"} with details unavailable
-              </p>
-            ) : null}
-            {selectedCount === 1 ? (
-              <p className="mt-2 max-w-md text-sm text-white/95">
-                Add at least one more section to calculate schedule risk.
-              </p>
-            ) : null}
-          </div>
-        ) : !compact ? (
-          <>
-            <div className="my-3 h-px w-44 bg-white/50" aria-hidden="true" />
-            <p className="text-lg text-white/95">
-              Ideas today.
-              <br />A brighter tomorrow.
-            </p>
-            <p className="mt-4 max-w-md text-sm text-white/85">
-              Plan smarter. Understand the cost of a schedule before registration — risk, walking
-              gaps, and grade history in one place.
-            </p>
-          </>
-        ) : null}
+        <p className="mt-3 text-lg text-white/95">Ideas today. A brighter tomorrow.</p>
       </div>
     </section>
   );

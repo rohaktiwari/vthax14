@@ -5,8 +5,6 @@ import {
   courseSearchFixture,
   demoSchedulesFixture,
   healthFixture,
-  stressFixture,
-  swapFixture,
   vibesFixture,
 } from "../fixtures";
 
@@ -38,9 +36,16 @@ export const handlers = [
 
   http.post(`${BASE}/analyze`, () => HttpResponse.json(analyzeFixture)),
 
-  http.post(`${BASE}/swap`, () => HttpResponse.json(swapFixture)),
-
-  http.post(`${BASE}/stress`, () => HttpResponse.json(stressFixture)),
-
   http.get(`${BASE}/professors/:surname/vibes`, () => HttpResponse.json(vibesFixture)),
+
+  http.get(`${BASE}/chat/status`, () => HttpResponse.json({ enabled: false })),
+
+  http.post(`${BASE}/chat`, () =>
+    HttpResponse.json({
+      reply: "Your Courses is empty. Search for a course or load a demo week, then ask again.",
+      source: "unavailable",
+      reason: "disabled",
+      notice: "Ask Gemini is not switched on for this demo, so this is HokieLens's own read.",
+    }),
+  ),
 ];

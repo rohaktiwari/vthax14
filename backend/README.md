@@ -81,17 +81,25 @@ Interactive contract: <http://127.0.0.1:8000/docs> (OpenAPI JSON at `/openapi.js
 
 ## Environment variables
 
-The server reads plain process environment variables only. It never loads
-`.env` and never reads API keys. Offline pipeline scripts also never load
-`.env`; the optional Google CLIs read `GOOGLE_MAPS_API_KEY` from the process
-environment only when `--allow-network` is passed.
+The eight planner routes read plain process environment variables only and make
+no outbound calls. The one optional exception is Ask Gemini (`POST /api/chat`),
+which reads `HOKIELENS_GEMINI` and `GEMINI_API_KEY` from the process
+environment (set them in the Render dashboard; never in the repo or any `VITE_`
+variable). Offline pipeline scripts never load `.env`; the optional Google CLIs
+read `GOOGLE_MAPS_API_KEY` from the process environment only when
+`--allow-network` is passed.
 
 | Variable | Default | Meaning |
 |---|---|---|
 | `CATALOG_TERM_ID` | `2026-fall` | The single catalog term served. Every section's `term_id` must match. |
 | `HOKIELENS_LENIENT` | `0` | `1` = lenient startup (see below). `0` = strict, exactly as the PRD specifies. **Default is 0.** |
 | `HOKIELENS_STUB_ANALYZE` | `0` | `1` = `POST /api/analyze` (and swap/stress base analysis) return the isolated placeholder. `0` = the real `risk.analyze` engine. **Default is 0** (normal scoring). The stub is a compatibility/testing path, not production scoring. |
+| `HOKIELENS_PUBLIC_URL` | `http://127.0.0.1:8000` | Public origin written into the ANS agent card (`/.well-known/agent-card.json`). Not a secret. |
 | `GOOGLE_MAPS_API_KEY` | unset | **Pipeline only.** Required for `fetch_buildings.py` / `fetch_walk_matrix.py` when `--allow-network` is set. The running server never reads this variable. |
+| `HOKIELENS_GEMINI` | `0` | `1` plus `GEMINI_API_KEY` turns on Ask Gemini (`/api/chat`) and the explain CLI/gateway. Off by default; the planner never depends on it. |
+| `GEMINI_API_KEY` | unset | Server-side only. Never commit, never log, never send to the browser. |
+| `GEMINI_MODEL` | `gemini-3.6-flash` | Optional model override for Ask Gemini and the explain CLI/gateway. |
+| `ANS_RA_URL` | unset | Optional GoDaddy ANS Registration Authority base URL. Dry-run unless `--allow-network` and CSRs exist. |
 
 Boolean flags accept `1/0`, `true/false`, `yes/no`, `on/off` (case-insensitive).
 Any other value aborts startup with a `ValueError` naming the variable.
@@ -101,6 +109,110 @@ PowerShell example:
 ```powershell
 $env:HOKIELENS_LENIENT = "1"; $env:HOKIELENS_STUB_ANALYZE = "1"; uvicorn main:app
 ```
+
+## Sponsor prizes (VTHacks 14)
+
+Optional add-ons. They do not change the eight planner routes, response fields, or
+calibrated scores. The core app stays offline. Copy `backend/.env.example` for the
+optional names; the process environment is what is read (no dotenv).
+
+Two-minute path from `backend/`:
+
+```powershell
+python -m sponsors.demo
+```
+
+That prints the Databricks impact story, a grounded schedule explanation, and the
+ANS agent-card URL plus DNS TXT record.
+
+### Deloitte x Databricks — student-success impact
+
+**What.** A Databricks-importable notebook plus CSV/JSON exports of the calibrated
+demo weeks (easy **41**, brutal **84**, swap **49 -> 19**, miss-week-8 **41 -> 46**).
+The notebook tells the advising story: registration says the CRNs fit; the catalog
+shows commute failures and difficulty. Spark visualizes the engine output; it does
+not recompute risk.
+
+**Run**
+
+```powershell
+cd backend
+python -m sponsors.impact              # print the four-number story
+python -m sponsors.impact --write      # rewrite sponsors/databricks/*.csv
+```
+
+**Demo.** Import `sponsors/databricks/HokieLens_Student_Impact.py` into a Databricks
+workspace (Community Edition is enough). Run all cells. Point at 41 vs 84, then the
+swap delta. Optional: upload the CSVs to `/FileStore/hokielens/` so `display` reads
+the live export. Needs a human Databricks login; no workspace token is stored here.
+
+### MLH — Gemini API
+
+**Ask Gemini chat (`POST /api/chat`, `GET /api/chat/status`).** A backend proxy: the
+browser never sees the key. Hidden from OpenAPI, so the eight-route contract is
+unchanged. Each question is answered from a facts block built server-side from the
+student's CRNs: selected sections with readable times, the risk score and factors,
+every same-day walk with minutes, gap and verdict, and other sections of the same
+courses. Guards:
+
+- Limits: 500 chars per message, 8 messages, 4 student turns, 12 CRNs, 16 KB body,
+  12 requests/min per client (X-Forwarded-For) and 30/min overall (429 + `Retry-After`).
+- Injection: all client text is stripped of angle brackets and control characters,
+  override phrases are redacted, client-supplied "assistant" turns are labelled
+  unverified, and `focus` values must match catalog buildings/CRNs.
+- Grounding: a reply that names a number, CRN, clock time, or minute count that is
+  not in the facts, or that leaks the key or prompt, is dropped for a deterministic
+  answer built from the same facts.
+- Fallback: missing key, Gemini quota (429), timeout, or any error returns 200 with
+  `source: "unavailable"|"fallback"`, a `reason`, and a readable `notice`.
+
+Response: `{reply, source, reason, notice}`. Tests mock Gemini at the function and
+HTTP-transport level; nothing in the suite touches the network.
+
+**Explain CLI/gateway.** Gemini rewrites an `AnalyzeResponse` into three
+student-facing cards (Risk, Commute, Difficulty). It sees only facts already in that
+JSON. Invented numbers are rejected and the deterministic template is used instead.
+
+**Run** (still from `backend/`)
+
+```powershell
+python -m sponsors.explain --fixture easy
+$env:HOKIELENS_GEMINI = "1"; $env:GEMINI_API_KEY = "your-key"
+python -m sponsors.explain --fixture easy --gemini
+uvicorn sponsors.gateway:app
+# POST /api/explain  {"crns": ["90001","90003","90008"]}
+```
+
+Without the flag+key, `/api/explain` and the CLI still return 200 with
+`"source": "template"`. `uvicorn main:app` does not mount `/api/explain` and makes
+no Gemini call. Needs a human Google AI Studio key.
+
+**Demo.** Run `--fixture brutal --gemini`, then `--fixture easy --gemini`. Same
+facts as `/api/analyze`; the copy is what a student would read under the score.
+Frontend wiring of `/api/explain` is a later, optional UI change.
+
+### GoDaddy — Agent Name Service (ANS)
+
+**What.** HokieLens is published as a named HTTP-API agent: protocol card at
+`GET /.well-known/agent-card.json` (also `/.well-known/ans/agent.json`), registration
+document at `/.well-known/ans/registration.json`, and a DNS TXT template in
+`sponsors/ans/dns-records.example.txt`. Other agents look it up by domain name, the
+same way browsers look up a website.
+
+**Run**
+
+```powershell
+cd backend
+uvicorn main:app
+# open http://127.0.0.1:8000/.well-known/agent-card.json
+$env:HOKIELENS_PUBLIC_URL = "https://YOUR_DOMAIN"
+python -m sponsors.identity
+```
+
+**Demo.** On a laptop: open the well-known card. On a public domain: point GoDaddy
+DNS at the deployed API, set `HOKIELENS_PUBLIC_URL`, publish the `_ans` TXT record.
+Live Registration Authority certificates/ACME are a human step (`ANS_RA_URL` plus
+CSRs); this repo never invents PEMs.
 
 ## Strict versus lenient startup
 
@@ -132,10 +244,11 @@ grade-record count, warning count. `/api/health` reports the same numbers.
 The running server makes no outbound network calls of any kind and never reads
 `.env` or API keys. Third-party APIs (Google Places/Routes) are used only by the
 manually invoked offline scripts in `scripts/`, and only when `--allow-network`
-is passed. The server never imports anything from `scripts/`. The demo must
-work with networking disabled. Request handlers never mutate loaded data or write
-files. Identical committed files plus an identical request always produce an
-identical response.
+is passed. The server never imports anything from `scripts/`. Gemini is the same
+shape: optional, off by default, and only on `sponsors.gateway` / the explain CLI.
+The demo must work with networking disabled. Request handlers never mutate loaded
+data or write files. Identical committed files plus an identical request always
+produce an identical response.
 
 ## Data files
 

@@ -342,6 +342,52 @@ export interface DemoSchedulesResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Optional Ask Gemini (POST /api/chat, GET /api/chat/status; not in OpenAPI)
+// ---------------------------------------------------------------------------
+
+export type ChatRole = "user" | "assistant";
+export type ChatSource = "gemini" | "fallback" | "unavailable";
+export type ChatReason =
+  | "disabled"
+  | "no_key"
+  | "quota"
+  | "timeout"
+  | "error"
+  | "ungrounded"
+  | "empty"
+  | "blocked";
+
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
+}
+
+export interface ChatFocus {
+  building?: string | null;
+  crn?: string | null;
+  professor?: string | null;
+}
+
+export interface ChatRequest {
+  messages: ChatMessage[];
+  crns?: string[];
+  focus?: ChatFocus | null;
+}
+
+export interface ChatResponse {
+  reply: string;
+  source: ChatSource;
+  /** Why the reply is not from Gemini; null when it is. */
+  reason: ChatReason | null;
+  /** One readable sentence explaining a non-Gemini reply; null when Gemini answered. */
+  notice: string | null;
+}
+
+export interface ChatStatusResponse {
+  enabled: boolean;
+}
+
+// ---------------------------------------------------------------------------
 // Error contract (detail is a string, or a structured object)
 // ---------------------------------------------------------------------------
 

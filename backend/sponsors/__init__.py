@@ -1,9 +1,9 @@
-"""Optional sponsor integrations. Never imported by the core planner except
-``sponsors.identity`` for the static ANS well-known documents.
+"""Optional sponsor integrations.
 
-The running ``uvicorn main:app`` process still makes no outbound calls and still
-ignores API keys. Gemini and live ANS registration are opt-in CLIs / the
-optional ``sponsors.gateway`` app.
+``sponsors.identity`` and ``sponsors.chat`` are imported by ``uvicorn main:app``.
+Chat is off unless ``HOKIELENS_GEMINI=1`` and ``GEMINI_API_KEY`` are set; the
+eight planner routes still make no outbound calls. Live ANS registration stays
+an opt-in CLI.
 """
 
 from __future__ import annotations
