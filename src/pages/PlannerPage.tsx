@@ -2,6 +2,7 @@ import AppHeader from "../components/AppHeader";
 import CampusMap from "../components/CampusMap";
 import CenterPanel from "../components/CenterPanel";
 import PrintSchedule from "../components/PrintSchedule";
+import WakingBanner from "../components/WakingBanner";
 import WeeklyCalendar from "../components/WeeklyCalendar";
 import YourCourses from "../components/YourCourses";
 import { CenterViewProvider } from "../context/CenterViewContext";
@@ -41,6 +42,7 @@ function Workspace() {
       <div className="print:hidden">
         <div className="flex h-dvh flex-col overflow-hidden bg-warm text-ink-primary">
           <AppHeader />
+          <WakingBanner />
           <main id="main-content" className="min-h-0 flex-1">
             <div className="mx-auto grid h-full max-w-[1800px] grid-cols-[minmax(280px,320px)_minmax(0,1fr)_minmax(460px,36%)] gap-5 px-6 py-5">
               <aside className="min-h-0">
