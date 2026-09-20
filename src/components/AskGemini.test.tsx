@@ -54,7 +54,7 @@ describe("AskGemini", () => {
     renderChat("/?crns=90001");
     const dialog = await openChat();
     expect(within(dialog).getByRole("button", { name: "How do I use this planner?" })).toBeTruthy();
-    expect(within(dialog).queryByRole("button", { name: "Why is my schedule risky?" })).toBeNull();
+    expect(within(dialog).queryByRole("button", { name: "Why is this schedule risky?" })).toBeNull();
   });
 
   it("sends the current CRNs and shows a grounded reply", async () => {
@@ -74,12 +74,12 @@ describe("AskGemini", () => {
 
     renderChat();
     const dialog = await openChat();
-    fireEvent.click(within(dialog).getByRole("button", { name: "Why is my schedule risky?" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Why is this schedule risky?" }));
 
     expect(await screen.findByText(/risk score is 41/i)).toBeTruthy();
     await waitFor(() => {
       expect(captured.body?.crns).toEqual(["90001", "90002"]);
-      expect(captured.body?.messages[0]?.content).toBe("Why is my schedule risky?");
+      expect(captured.body?.messages[0]?.content).toBe("Why is this schedule risky?");
     });
     expect(screen.queryByText(/not switched on/i)).toBeNull();
   });
@@ -89,7 +89,7 @@ describe("AskGemini", () => {
     const dialog = await openChat();
     expect(await within(dialog).findByText(/gemini is off here/i)).toBeTruthy();
 
-    fireEvent.click(within(dialog).getByRole("button", { name: "How do I use this planner?" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "What should I swap?" }));
     expect(await screen.findByText(/your courses is empty/i)).toBeTruthy();
     expect(await screen.findByText(/not switched on for this demo/i)).toBeTruthy();
   });
@@ -116,7 +116,7 @@ describe("AskGemini", () => {
 
     renderChat();
     const dialog = await openChat();
-    fireEvent.click(within(dialog).getByRole("button", { name: "How do I use this planner?" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "What should I swap?" }));
 
     expect(screen.getByRole("status", { name: /reading your schedule/i })).toBeTruthy();
     const alert = await screen.findByRole("alert");

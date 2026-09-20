@@ -13,10 +13,9 @@ const MAX_USER_TURNS = 4;
 const SHOW_COUNTER_AT = 400;
 
 const STARTERS_WITH_SCHEDULE = [
-  "Why is my schedule risky?",
-  "Which walk between classes is tightest?",
-  "Is there a better section for one of my classes?",
-  "How do I use this planner?",
+  "Why is this schedule risky?",
+  "What should I swap?",
+  "Which walk is the worst?",
 ] as const;
 const STARTERS_WITHOUT_SCHEDULE = ["How do I use this planner?"] as const;
 
@@ -41,6 +40,7 @@ function ThinkingBubble() {
   return (
     <div className="flex justify-start" role="status" aria-label="Gemini is reading your schedule">
       <div className="w-4/5 animate-pulse space-y-2 rounded-2xl border border-line bg-warm px-3.5 py-3" aria-hidden="true">
+        <p className="text-sm font-medium text-ink-secondary">Thinking…</p>
         <div className="h-3 w-full rounded bg-line" />
         <div className="h-3 w-5/6 rounded bg-line" />
         <div className="h-3 w-1/2 rounded bg-line" />
@@ -223,6 +223,26 @@ export default function AskGemini() {
             </button>
           </div>
 
+          {!threadFull ? (
+            <div className="border-b border-line px-4 py-2.5" data-testid="gemini-starters">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-secondary">Try asking</p>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {starters.map((prompt) => (
+                  <li key={prompt}>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void send(prompt)}
+                      className="rounded-full border border-line bg-warm px-3 py-1.5 text-left text-sm text-ink-primary transition-colors hover:border-maroon/40 hover:bg-soft-maroon disabled:opacity-60"
+                    >
+                      {prompt}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
           <div ref={logRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-3 hl-scroll">
             {messages.length === 0 ? (
               <div>
@@ -230,20 +250,6 @@ export default function AskGemini() {
                   Ask about your week: why it is risky, which walk is tight, or another section of a
                   class you picked.
                 </p>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {starters.map((prompt) => (
-                    <li key={prompt}>
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void send(prompt)}
-                        className="rounded-full border border-line bg-warm px-3 py-1.5 text-left text-sm text-ink-primary transition-colors hover:border-maroon/40 hover:bg-soft-maroon disabled:opacity-60"
-                      >
-                        {prompt}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
               </div>
             ) : (
               messages.map((item, index) => (

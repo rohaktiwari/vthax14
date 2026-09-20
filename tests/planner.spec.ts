@@ -351,7 +351,7 @@ test("happy path: demo week, per-course risk, walk chip, calendar details, chat,
 
   // 6. Ask Gemini answers from the server, with a plain-language notice when it is off.
   await page.getByRole("button", { name: "Open Ask Gemini" }).click();
-  await page.getByRole("button", { name: "Why is my schedule risky?" }).click();
+  await page.getByRole("button", { name: "Why is this schedule risky?" }).click();
   await expect(page.getByText("This schedule scores 41 out of 100, a moderate week.")).toBeVisible();
   await expect(page.getByText(/not switched on for this demo/)).toBeVisible();
   await page.keyboard.press("Escape");
