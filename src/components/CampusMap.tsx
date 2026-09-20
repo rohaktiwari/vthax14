@@ -370,7 +370,14 @@ export default function CampusMap() {
             </p>
           ) : null}
           {analysis.error && !analysis.data ? (
-            <ErrorState title="Walking warnings unavailable" error={analysis.error} onRetry={analysis.retry} />
+            <p
+              role="status"
+              data-testid="map-analysis-error"
+              className="rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-sm text-ink-primary"
+            >
+              Walking warnings are unavailable right now. The schedule overview explains why and lets you
+              retry.
+            </p>
           ) : null}
 
           {active ? (
