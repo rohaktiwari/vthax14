@@ -3,6 +3,7 @@ import type { Config } from "tailwindcss";
 // Brand tokens come from the CSS custom properties in src/styles/globals.css so a
 // tone can be adjusted once (see the frontend PRD §7.1 token contract).
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {

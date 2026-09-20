@@ -250,7 +250,7 @@ export default function CampusMap() {
       ) : (
         <div className="space-y-3 p-3">
           <div className="relative h-[clamp(9rem,24vh,15rem)] overflow-hidden rounded-xl border border-line map-grid map-canvas">
-            <img src="/campus-map.svg" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
+            <img src="/campus-map.svg" alt="" aria-hidden="true" className="map-backdrop absolute inset-0 h-full w-full object-cover" />
 
             {buildingsQuery.isPending ? (
               <div className="absolute inset-0 grid place-items-center bg-panel/70 p-6">

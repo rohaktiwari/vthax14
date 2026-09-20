@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { normalizeApiError } from "../api/errors";
 import { useHealth } from "../api/hooks";
 import AskGemini from "./AskGemini";
+import ThemeToggle from "./ThemeToggle";
 
 function Monogram() {
   return (
@@ -140,6 +141,7 @@ export default function AppHeader() {
       <div className="ml-auto flex items-center gap-3">
         <ApiHealthStatus />
         <AskGemini />
+        <ThemeToggle />
         <AboutPopover />
       </div>
     </header>
