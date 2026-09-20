@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * HokieLens design tokens (frontend PRD §7.1).
+ * Tailwind colors in tailwind.config.ts resolve to these custom properties so a
+ * tone can be adjusted in exactly one place.
+ */
+:root {
+  --color-maroon: #861f41; /* Primary maroon */
+  --color-maroon-dark: #5e1230; /* Primary maroon, dark */
+  --color-orange: #e87722; /* Burnt orange accent */
+  --color-bg-warm: #f7f5f4; /* Warm background */
+  --color-panel: #ffffff; /* Panel background */
+  --color-soft-maroon: #f7eef2; /* Soft maroon surface */
+  --color-text-primary: #1e2430; /* Text primary */
+  --color-text-secondary: #667085; /* Text secondary */
+  --color-border: #e4e7ec; /* Border */
+  --color-success: #18794e; /* Success */
+  --color-warning: #b54708; /* Warning */
+  --color-danger: #b42318; /* Danger */
+  --color-info: #175cd3; /* Info */
+
+  /* One elevation scale used by every panel/card so depth stays consistent. */
+  --shadow-card: 0 1px 2px rgb(30 36 48 / 0.05), 0 1px 3px rgb(30 36 48 / 0.06);
+  --shadow-card-lg: 0 12px 28px -18px rgb(30 36 48 / 0.28), 0 2px 6px rgb(30 36 48 / 0.05);
+}
+
+html {
+  background-color: var(--color-bg-warm);
+  color: var(--color-text-primary);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-maroon);
+  color: #ffffff;
+}
+
+/*
+ * Visible focus state everywhere (PRD §12 WCAG 2.1 AA). The outline follows the
+ * element's own corner radius, so we deliberately do not override border-radius
+ * here (that would square off pills and switches while focused).
+ */
+*:focus-visible {
+  outline: 2px solid var(--color-maroon);
+  outline-offset: 2px;
+}
+
+/* Inset controls (inputs/selects) sit flush; keep the ring tight and legible. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="switch"]:focus-visible {
+  outline-offset: 1px;
+}
+
+@layer components {
+  /* Dusk sky for the Burruss-inspired hero illustration: a warm sun glow over
+     the maroon→orange gradient so the silhouette reads against a real sky. */
+  .hero-sky {
+    background:
+      radial-gradient(120% 85% at 78% 8%, rgb(255 190 120 / 0.42), transparent 58%),
+      radial-gradient(90% 70% at 18% 96%, rgb(20 8 16 / 0.5), transparent 62%),
+      linear-gradient(
+        165deg,
+        var(--color-maroon-dark) 0%,
+        var(--color-maroon) 42%,
+        var(--color-orange) 120%
+      );
+  }
+
+  /* Local schematic map texture — grid + soft study-area tints. No external tiles. */
+  .map-grid {
+    background-color: var(--color-bg-warm);
+    background-image:
+      linear-gradient(to right, rgb(228 231 236 / 0.9) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(228 231 236 / 0.9) 1px, transparent 1px),
+      radial-gradient(circle at 30% 28%, var(--color-soft-maroon), transparent 62%),
+      radial-gradient(circle at 76% 66%, rgb(232 119 34 / 0.12), transparent 55%);
+    background-size:
+      28px 28px,
+      28px 28px,
+      100% 100%,
+      100% 100%;
+  }
+
+  /* Soft inner depth so the map canvas reads as a surface, not a flat image. */
+  .map-canvas {
+    box-shadow:
+      inset 0 0 0 1px rgb(30 36 48 / 0.05),
+      inset 0 14px 30px -22px rgb(30 36 48 / 0.35);
+  }
+
+  /* Thin, unobtrusive scrollbars for the independently scrolling columns. */
+  .hl-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+}
+
+/* Respect reduced-motion preferences (PRD §12.10). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Print stylesheet (frontend PRD §10.6). The on-screen shell carries
+ * `print:hidden`; `PrintSchedule` carries `hidden print:block`, so only the
+ * schedule/analysis summary is printed. No PDF library is involved.
+ */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+
+  [data-testid="print-schedule"] {
+    font-size: 12px;
+  }
+
+  [data-testid="print-schedule"] h2 {
+    break-after: avoid;
+  }
+
+  [data-testid="print-schedule"] li,
+  [data-testid="print-schedule"] tr {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,202 @@
+# Calibrated synthetic catalog. Regenerates data/sections.json via
+# `python scripts/build_sections.py`. Not real Banner data.
+- crn: '90002'
+  course_id: CS 2505
+  title: Introduction to Computer Organization
+  credits: 3.0
+  instructor_names:
+  - Alan Turing
+  schedule_type: Lecture
+  modality: f2f
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 150
+  seats_available: 3
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - T
+    - R
+    start_min: 660
+    end_min: 735
+    building: TORG
+    room: '1060'
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+- crn: '90007'
+  course_id: CS 2505
+  title: Introduction to Computer Organization
+  credits: 3.0
+  instructor_names:
+  - Alan Turing
+  schedule_type: Lecture
+  modality: f2f
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 150
+  seats_available: 37
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - M
+    - W
+    - F
+    start_min: 725
+    end_min: 775
+    building: TORG
+    room: '210'
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+- crn: '90001'
+  course_id: CS 3114
+  title: Data Structures and Algorithms
+  credits: 3.0
+  instructor_names:
+  - Ada Lovelace
+  schedule_type: Lecture
+  modality: f2f
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 120
+  seats_available: 14
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - M
+    - W
+    - F
+    start_min: 610
+    end_min: 660
+    building: MCB
+    room: '126'
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+- crn: '90006'
+  course_id: CS 3114
+  title: Data Structures and Algorithms
+  credits: 3.0
+  instructor_names:
+  - Ada Lovelace
+  schedule_type: Lecture
+  modality: f2f
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 120
+  seats_available: 0
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - T
+    - R
+    start_min: 570
+    end_min: 645
+    building: GBJ
+    room: '190'
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+- crn: '90004'
+  course_id: ENGL 1106
+  title: 'First-Year Writing: Writing from Research'
+  credits: 3.0
+  instructor_names: []
+  schedule_type: Lecture
+  modality: online_async
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 24
+  seats_available: 0
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings: []
+- crn: '90008'
+  course_id: HNFE 1004
+  title: Foods, Nutrition and Exercise
+  credits: 3.0
+  instructor_names:
+  - Marie Curie
+  schedule_type: Lecture
+  modality: online_sync
+  grade_mode: pass_fail
+  campus: Blacksburg
+  seats_max: 300
+  seats_available: 118
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - T
+    start_min: 1020
+    end_min: 1070
+    building: null
+    room: null
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+- crn: '90003'
+  course_id: MATH 2534
+  title: Introduction to Discrete Mathematics
+  credits: 3.0
+  instructor_names:
+  - Grace Hopper
+  schedule_type: Lecture
+  modality: f2f
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 90
+  seats_available: 22
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - M
+    - W
+    - F
+    start_min: 670
+    end_min: 720
+    building: WHI
+    room: '230'
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+- crn: '90005'
+  course_id: PHYS 2305
+  title: Foundations of Physics I
+  credits: 4.0
+  instructor_names:
+  - Edsger Dijkstra
+  schedule_type: Lecture
+  modality: hybrid
+  grade_mode: standard
+  campus: Blacksburg
+  seats_max: 200
+  seats_available: 41
+  comments: Calibrated synthetic catalog section; not real Banner data.
+  description: null
+  prereqs_text: null
+  meetings:
+  - days:
+    - T
+    - R
+    start_min: 745
+    end_min: 820
+    building: WHI
+    room: '300'
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'
+  - days:
+    - W
+    start_min: 1080
+    end_min: 1130
+    building: null
+    room: null
+    start_date: '2026-08-24'
+    end_date: '2026-12-09'

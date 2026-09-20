@@ -1,0 +1,84 @@
+{
+  "dijkstra": {
+    "comments": [
+      "expects rigor on every problem set"
+    ],
+    "difficulty": 4.2,
+    "full_name": "Edsger Dijkstra",
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "synthetic_filler",
+      "verified": null
+    },
+    "n_reviews": 19,
+    "score": 3.4,
+    "tags": [
+      "Tough Grader",
+      "Get Ready To Read"
+    ],
+    "would_take_again": 55.0
+  },
+  "hopper": {
+    "comments": [
+      "curves generously",
+      "great examples in class"
+    ],
+    "difficulty": 2.9,
+    "full_name": "Grace Hopper",
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "synthetic_filler",
+      "verified": null
+    },
+    "n_reviews": 58,
+    "score": 4.7,
+    "tags": [
+      "Caring",
+      "Clear Grading Criteria"
+    ],
+    "would_take_again": 93.0
+  },
+  "lovelace": {
+    "comments": [
+      "projects are demanding but fair",
+      "exams mirror the homework"
+    ],
+    "difficulty": 3.6,
+    "full_name": "Ada Lovelace",
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "synthetic_filler",
+      "verified": null
+    },
+    "n_reviews": 42,
+    "score": 4.4,
+    "tags": [
+      "Tough Grader",
+      "Inspirational"
+    ],
+    "would_take_again": 88.0
+  },
+  "turing": {
+    "comments": [
+      "start the assignments early"
+    ],
+    "difficulty": 3.8,
+    "full_name": "Alan Turing",
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "synthetic_filler",
+      "verified": null
+    },
+    "n_reviews": 31,
+    "score": 3.9,
+    "tags": [
+      "Lecture Heavy",
+      "Test Heavy"
+    ],
+    "would_take_again": 71.0
+  }
+}

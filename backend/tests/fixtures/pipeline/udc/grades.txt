@@ -1,0 +1,4 @@
+Year|Term|Subject|CourseNo|Title|Instructor|GPA|A|A-|B+|B|B-|C+|C|C-|D+|D|D-|F|Withdraws|GradedEnrollment|CRN|Credits
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+2025-26|Fall|CS|3114|Data Structures and Algorithms|Ada Lovelace|3.20|30|15|12|18|8|6|5|3|1|1|0.5|0.5|4|80|83111|3
+2024-2025|Fall|CS|3114|Data Structures and Algorithms|Ada Lovelace|3.10|28|14|12|16|10|8|6|3|1|1|0.5|0.5|5|90|82111|3

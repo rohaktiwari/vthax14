@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Schematic local campus illustration">
+  <title>Schematic local campus illustration</title>
+  <desc>A decorative, non-navigational schematic of a campus. No map tiles or routing data are used.</desc>
+  <rect width="800" height="600" fill="#f7f5f4"/>
+
+  <!-- green space -->
+  <ellipse cx="250" cy="200" rx="190" ry="120" fill="#e6f5ee"/>
+  <ellipse cx="610" cy="430" rx="170" ry="130" fill="#eef2d8"/>
+
+  <!-- quad / drillfield suggestion -->
+  <ellipse cx="410" cy="290" rx="130" ry="90" fill="#eef4f7" stroke="#d7e3ea" stroke-width="2"/>
+
+  <!-- roads -->
+  <path d="M0 360 H800" stroke="#e4e7ec" stroke-width="16" fill="none"/>
+  <path d="M420 0 V600" stroke="#e4e7ec" stroke-width="14" fill="none"/>
+  <path d="M0 120 C180 160 300 90 460 130 S700 170 800 120" stroke="#eceff3" stroke-width="10" fill="none"/>
+
+  <!-- walkways -->
+  <path d="M410 290 L180 190" stroke="#d9d2cc" stroke-width="4" stroke-dasharray="6 6" fill="none"/>
+  <path d="M410 290 L640 200" stroke="#d9d2cc" stroke-width="4" stroke-dasharray="6 6" fill="none"/>
+  <path d="M410 290 L430 470" stroke="#d9d2cc" stroke-width="4" stroke-dasharray="6 6" fill="none"/>
+
+  <!-- generic building blocks -->
+  <rect x="120" y="150" width="90" height="58" rx="4" fill="#e9dfe4" stroke="#d3c3cb" stroke-width="2"/>
+  <rect x="560" y="160" width="120" height="70" rx="4" fill="#e9dfe4" stroke="#d3c3cb" stroke-width="2"/>
+  <rect x="300" y="420" width="150" height="80" rx="4" fill="#e9dfe4" stroke="#d3c3cb" stroke-width="2"/>
+  <rect x="610" y="380" width="90" height="60" rx="4" fill="#e9dfe4" stroke="#d3c3cb" stroke-width="2"/>
+  <rect x="80" y="430" width="100" height="64" rx="4" fill="#e9dfe4" stroke="#d3c3cb" stroke-width="2"/>
+
+  <!-- trees -->
+  <g fill="#cfe6d8">
+    <circle cx="200" cy="300" r="14"/>
+    <circle cx="700" cy="260" r="16"/>
+    <circle cx="520" cy="520" r="13"/>
+    <circle cx="150" cy="90" r="12"/>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+NAME: Edsger Dijkstra
+score: 3.4
+difficulty: 4.2
+n_reviews: 19
+would_take_again: 55.0
+tags: Tough Grader; Get Ready To Read
+comment: expects rigor on every problem set
+---
+NAME: Grace Hopper
+score: 4.7
+difficulty: 2.9
+n_reviews: 58
+would_take_again: 93.0
+tags: Caring; Clear Grading Criteria
+comment: curves generously
+comment: great examples in class
+---
+NAME: Ada Lovelace
+score: 4.4
+difficulty: 3.6
+n_reviews: 42
+would_take_again: 88.0
+tags: Tough Grader; Inspirational
+comment: projects are demanding but fair
+comment: exams mirror the homework
+---
+NAME: Alan Turing
+score: 3.9
+difficulty: 3.8
+n_reviews: 31
+would_take_again: 71.0
+tags: Lecture Heavy; Test Heavy
+comment: start the assignments early

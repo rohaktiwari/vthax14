@@ -1,0 +1,38 @@
+{
+  "GBJ|MCB": {
+    "fetched_at": null,
+    "meters": 600,
+    "minutes": 8,
+    "source": "manual_override"
+  },
+  "GBJ|TORG": {
+    "fetched_at": null,
+    "meters": 750,
+    "minutes": 10,
+    "source": "manual_override"
+  },
+  "GBJ|WHI": {
+    "fetched_at": null,
+    "meters": 900,
+    "minutes": 12,
+    "source": "manual_override"
+  },
+  "MCB|TORG": {
+    "fetched_at": null,
+    "meters": 350,
+    "minutes": 5,
+    "source": "manual_override"
+  },
+  "MCB|WHI": {
+    "fetched_at": null,
+    "meters": 1400,
+    "minutes": 18,
+    "source": "manual_override"
+  },
+  "TORG|WHI": {
+    "fetched_at": null,
+    "meters": 1150,
+    "minutes": 15,
+    "source": "manual_override"
+  }
+}

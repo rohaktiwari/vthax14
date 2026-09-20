@@ -1,0 +1,14 @@
+Year|Term|Subject|CourseNo|Title|Instructor|GPA|A|A-|B+|B|B-|C+|C|C-|D+|D|D-|F|Withdraws|GradedEnrollment|CRN|Credits
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+2023-24|Fall|CS|2505|Introduction to Computer Organization|Alan Turing|2.4|12|8|10|16|12|12|12|8|4|3|1|2|8|125|80100|3
+2024-25|Fall|CS|2505|Introduction to Computer Organization|Alan Turing|2.7|20|12|14|18|10|8|8|4|2|2|1|1|6|140|81300|3
+2025-26|Fall|CS|2505|Introduction to Computer Organization|Alan Turing|3.2|20|12|14|18|10|8|8|4|2|2|1|1|4|130|83100|3
+2024-25|Fall|CS|3114|Data Structures and Algorithms|Ada Lovelace|3.55|30|15|15|15|8|6|5|2|1|1|1|1|3|120|81234|3
+2025-26|Fall|CS|3114|Data Structures and Algorithms|Ada Lovelace|3.2|30|15|15|15|8|6|5|2|1|1|1|1|2|95|83001|3
+2025-26|Spring|CS|3114|Data Structures and Algorithms|Ada Lovelace|2.65|20|12|14|18|10|8|8|4|2|2|1|1|5|110|12345|3
+2023-24|Spring|MATH|2534|Introduction to Discrete Mathematics|Grace Hopper|3.15|20|12|14|18|10|8|8|4|2|2|1|1|2|55|12200|3
+2024-25|Fall|MATH|2534|Introduction to Discrete Mathematics|Grace Hopper|3.8|40|20|15|10|5|4|3|1|1|0.5|0.3|0.2|1|70|82100|3
+2025-26|Fall|MATH|2534|Introduction to Discrete Mathematics|Grace Hopper|3.45|40|20|15|10|5|4|3|1|1|0.5|0.3|0.2|1|60|83200|3
+2023-24|Fall|PHYS|2305|Foundations of Physics I|Edsger Dijkstra|2.35|12|8|10|16|12|12|12|8|4|3|1|2|10|180|80200|4
+2024-25|Spring|PHYS|2305|Foundations of Physics I|Edsger Dijkstra|2.75|20|12|14|18|10|8|8|4|2|2|1|1|7|200|12400|4
+2025-26|Fall|PHYS|2305|Foundations of Physics I|Edsger Dijkstra|3.35|20|12|14|18|10|8|8|4|2|2|1|1|4|190|83300|4

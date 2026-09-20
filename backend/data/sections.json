@@ -1,0 +1,344 @@
+[
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "CS 2505",
+    "course_no": "2505",
+    "credits": 3.0,
+    "crn": "90002",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [
+      "Alan Turing"
+    ],
+    "meetings": [
+      {
+        "building": "TORG",
+        "days": [
+          "T",
+          "R"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 735,
+        "room": "1060",
+        "start_date": "2026-08-24",
+        "start_min": 660
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "f2f",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 3,
+      "max": 150
+    },
+    "subject": "CS",
+    "term_id": "2026-fall",
+    "title": "Introduction to Computer Organization"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "CS 2505",
+    "course_no": "2505",
+    "credits": 3.0,
+    "crn": "90007",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [
+      "Alan Turing"
+    ],
+    "meetings": [
+      {
+        "building": "TORG",
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 775,
+        "room": "210",
+        "start_date": "2026-08-24",
+        "start_min": 725
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "f2f",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 37,
+      "max": 150
+    },
+    "subject": "CS",
+    "term_id": "2026-fall",
+    "title": "Introduction to Computer Organization"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "CS 3114",
+    "course_no": "3114",
+    "credits": 3.0,
+    "crn": "90001",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [
+      "Ada Lovelace"
+    ],
+    "meetings": [
+      {
+        "building": "MCB",
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 660,
+        "room": "126",
+        "start_date": "2026-08-24",
+        "start_min": 610
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "f2f",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 14,
+      "max": 120
+    },
+    "subject": "CS",
+    "term_id": "2026-fall",
+    "title": "Data Structures and Algorithms"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "CS 3114",
+    "course_no": "3114",
+    "credits": 3.0,
+    "crn": "90006",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [
+      "Ada Lovelace"
+    ],
+    "meetings": [
+      {
+        "building": "GBJ",
+        "days": [
+          "T",
+          "R"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 645,
+        "room": "190",
+        "start_date": "2026-08-24",
+        "start_min": 570
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "f2f",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 0,
+      "max": 120
+    },
+    "subject": "CS",
+    "term_id": "2026-fall",
+    "title": "Data Structures and Algorithms"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "ENGL 1106",
+    "course_no": "1106",
+    "credits": 3.0,
+    "crn": "90004",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [],
+    "meetings": [],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "online_async",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 0,
+      "max": 24
+    },
+    "subject": "ENGL",
+    "term_id": "2026-fall",
+    "title": "First-Year Writing: Writing from Research"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "HNFE 1004",
+    "course_no": "1004",
+    "credits": 3.0,
+    "crn": "90008",
+    "description": null,
+    "grade_mode": "pass_fail",
+    "instructor_names": [
+      "Marie Curie"
+    ],
+    "meetings": [
+      {
+        "building": null,
+        "days": [
+          "T"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 1070,
+        "room": null,
+        "start_date": "2026-08-24",
+        "start_min": 1020
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "online_sync",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 118,
+      "max": 300
+    },
+    "subject": "HNFE",
+    "term_id": "2026-fall",
+    "title": "Foods, Nutrition and Exercise"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "MATH 2534",
+    "course_no": "2534",
+    "credits": 3.0,
+    "crn": "90003",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [
+      "Grace Hopper"
+    ],
+    "meetings": [
+      {
+        "building": "WHI",
+        "days": [
+          "M",
+          "W",
+          "F"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 720,
+        "room": "230",
+        "start_date": "2026-08-24",
+        "start_min": 670
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "f2f",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 22,
+      "max": 90
+    },
+    "subject": "MATH",
+    "term_id": "2026-fall",
+    "title": "Introduction to Discrete Mathematics"
+  },
+  {
+    "campus": "Blacksburg",
+    "comments": "Calibrated synthetic catalog section; not real Banner data.",
+    "course_id": "PHYS 2305",
+    "course_no": "2305",
+    "credits": 4.0,
+    "crn": "90005",
+    "description": null,
+    "grade_mode": "standard",
+    "instructor_names": [
+      "Edsger Dijkstra"
+    ],
+    "meetings": [
+      {
+        "building": "WHI",
+        "days": [
+          "T",
+          "R"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 820,
+        "room": "300",
+        "start_date": "2026-08-24",
+        "start_min": 745
+      },
+      {
+        "building": null,
+        "days": [
+          "W"
+        ],
+        "end_date": "2026-12-09",
+        "end_min": 1130,
+        "room": null,
+        "start_date": "2026-08-24",
+        "start_min": 1080
+      }
+    ],
+    "meta": {
+      "confidence": "low",
+      "fetched_at": null,
+      "source": "banner_class_search",
+      "verified": false
+    },
+    "modality": "hybrid",
+    "prereqs_text": null,
+    "schedule_type": "Lecture",
+    "seats": {
+      "available": 41,
+      "max": 200
+    },
+    "subject": "PHYS",
+    "term_id": "2026-fall",
+    "title": "Foundations of Physics I"
+  }
+]

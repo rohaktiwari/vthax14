@@ -1,0 +1,42 @@
+{
+  "GBJ": {
+    "address": "635 Prices Fork Rd, Blacksburg, VA",
+    "fetched_at": null,
+    "lat": 37.2333,
+    "lng": -80.423,
+    "name": "Goodwin Hall",
+    "place_id": null,
+    "source": "manual_fix",
+    "verified": false
+  },
+  "MCB": {
+    "address": "225 Stanger St, Blacksburg, VA",
+    "fetched_at": null,
+    "lat": 37.2293,
+    "lng": -80.4232,
+    "name": "McBryde Hall",
+    "place_id": null,
+    "source": "manual_fix",
+    "verified": false
+  },
+  "TORG": {
+    "address": "620 Drillfield Dr, Blacksburg, VA",
+    "fetched_at": null,
+    "lat": 37.2296,
+    "lng": -80.42,
+    "name": "Torgersen Hall",
+    "place_id": null,
+    "source": "manual_fix",
+    "verified": false
+  },
+  "WHI": {
+    "address": "1185 Perry St, Blacksburg, VA",
+    "fetched_at": null,
+    "lat": 37.2311,
+    "lng": -80.4245,
+    "name": "Whittemore Hall",
+    "place_id": null,
+    "source": "manual_fix",
+    "verified": false
+  }
+}

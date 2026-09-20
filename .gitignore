@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+pytest-cache-files*/
+.venv/
+venv/
+
+# Secrets for offline pipeline scripts only; the server never reads this file.
+.env
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Frontend (React + Vite at repository root)
+node_modules/
+dist/
+.vite/
+.env.local
+playwright-report/
+test-results/

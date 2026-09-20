@@ -1,0 +1,48 @@
+- crn: "91001"
+  course_id: "CS 1114"
+  title: "Introduction to Software Design"
+  credits: 3
+  instructor_names:
+    - "Ada Lovelace"
+  schedule_type: Lecture
+  modality: f2f
+  grade_mode: standard
+  seats_max: 40
+  seats_available: 12
+  meetings:
+    - days: MWF
+      start: "10:10 AM"
+      end: "11:00 AM"
+      building: MCB
+      room: "113"
+      start_date: "2026-08-24"
+      end_date: "2026-12-09"
+- crn: "91002"
+  course_id: "CS 2114"
+  title: "Software Design and Data Structures"
+  credits: 3
+  instructor: "Grace Hopper"
+  schedule_type: Lecture
+  modality: online_sync
+  grade_mode: standard
+  seats:
+    max: 80
+    available: 20
+  meetings:
+    - days: TTh
+      start: "1:00 PM"
+      end: "2:15 PM"
+      building: online
+      start_date: "2026-08-24"
+      end_date: "2026-12-09"
+- crn: "91003"
+  course_id: "ENGL 1106"
+  title: "First-Year Writing"
+  credits: 3
+  instructor_names: []
+  schedule_type: Lecture
+  modality: online_async
+  grade_mode: standard
+  seats_max: 25
+  seats_available: 4
+  meetings: []
