@@ -77,8 +77,8 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
 
   return (
     <div data-testid="demo-picker">
-      <p className="text-sm font-medium text-ink-secondary">{title}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
+      <p className="text-base font-semibold text-ink-primary">{title}</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {options.map((option) => (
           <button
             key={option.key}
@@ -86,7 +86,11 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
             data-testid={`demo-${option.key}`}
             aria-haspopup="false"
             onClick={() => request(option.key)}
-            className={pending === option.key ? BTN_PRIMARY : BTN_SECONDARY}
+            className={`inline-flex min-h-16 items-center justify-center rounded-xl border-2 px-5 py-4 text-lg font-bold shadow-card transition-colors ${
+              pending === option.key
+                ? "border-maroon bg-maroon text-white hover:bg-maroon-dark"
+                : "border-maroon bg-soft-maroon text-ink-primary hover:bg-maroon hover:text-white"
+            }`}
           >
             {option.label}
           </button>
