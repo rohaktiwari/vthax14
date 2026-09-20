@@ -1,0 +1,49 @@
+{
+  "agentDescription": "Virginia Tech course-registration planner. Scores schedule risk, walking gaps, and course difficulty from committed catalog data. Heuristic planning aid, not a grade prediction.",
+  "agentDisplayName": "HokieLens",
+  "agentHost": "127.0.0.1",
+  "documentationUrl": "https://github.com/Unfounded3/VTHax14",
+  "endpoints": [
+    {
+      "agentUrl": "__PUBLIC_BASE__/api",
+      "documentationUrl": "__PUBLIC_BASE__/docs",
+      "functions": [
+        {
+          "id": "analyzeSchedule",
+          "name": "Analyze schedule risk",
+          "tags": ["risk", "gpa", "commute"]
+        },
+        {
+          "id": "compareSwap",
+          "name": "Compare a section swap",
+          "tags": ["swap", "risk"]
+        },
+        {
+          "id": "missWeekStress",
+          "name": "Miss-a-week stress",
+          "tags": ["stress"]
+        },
+        {
+          "id": "searchCourses",
+          "name": "Search the catalog",
+          "tags": ["search", "catalog"]
+        }
+      ],
+      "metadataUrl": "__PUBLIC_BASE__/.well-known/agent-card.json",
+      "protocol": "HTTP-API",
+      "transports": ["REST", "HTTP"]
+    }
+  ],
+  "provider": {
+    "organization": "HokieLens / VTHacks 14",
+    "url": "https://github.com/Unfounded3/VTHax14"
+  },
+  "protocol": "ans-v2",
+  "skills": [
+    "schedule-risk",
+    "commute-warnings",
+    "section-swap",
+    "miss-week-stress"
+  ],
+  "version": "0.1.0"
+}

@@ -1,0 +1,35 @@
+{
+  "agentDescription": "Virginia Tech course-registration planner that scores schedule risk, commute gaps, and course difficulty.",
+  "agentDisplayName": "HokieLens",
+  "agentHost": "127.0.0.1",
+  "discoveryProfiles": [
+    "ANS_DNSAID"
+  ],
+  "endpoints": [
+    {
+      "agentUrl": "__PUBLIC_BASE__/api",
+      "documentationUrl": "__PUBLIC_BASE__/docs",
+      "functions": [
+        {
+          "id": "analyzeSchedule",
+          "name": "Analyze schedule risk",
+          "tags": ["risk", "gpa", "commute"]
+        },
+        {
+          "id": "compareSwap",
+          "name": "Compare a section swap",
+          "tags": ["swap", "risk"]
+        },
+        {
+          "id": "missWeekStress",
+          "name": "Miss-a-week stress",
+          "tags": ["stress"]
+        }
+      ],
+      "metadataUrl": "__PUBLIC_BASE__/.well-known/agent-card.json",
+      "protocol": "HTTP-API",
+      "transports": ["REST", "HTTP"]
+    }
+  ],
+  "version": "0.1.0"
+}
