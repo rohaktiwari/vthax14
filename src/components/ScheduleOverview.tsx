@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useCenterView } from "../context/CenterViewContext";
 import { useSchedule } from "../context/ScheduleContext";
+import { useCountUp } from "../hooks/useCountUp";
 import { useScheduleAnalysis } from "../hooks/useScheduleAnalysis";
 import { formatRiskScore, riskBand, type RiskTone } from "../lib/risk";
 import { creditsLabel } from "../lib/sectionText";
@@ -35,12 +36,13 @@ const TONE_BADGE: Record<RiskTone, Tone> = {
 
 function ScoreMeter({ score }: { score: number }) {
   const band = riskBand(score);
-  const filled = Math.round(Math.min(100, Math.max(0, score)) / 10);
+  const animated = useCountUp(score);
+  const filled = Math.round(Math.min(100, Math.max(0, animated)) / 10);
   return (
     <div className="flex items-center gap-5">
       <p className={`flex items-baseline gap-1.5 leading-none ${TONE_TEXT[band.tone]}`}>
         <span className="text-6xl font-extrabold tabular-nums" data-testid="risk-score">
-          {formatRiskScore(score)}
+          {formatRiskScore(animated)}
         </span>
         <span className="text-base font-semibold text-ink-secondary">/ 100</span>
       </p>
