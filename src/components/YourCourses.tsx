@@ -9,7 +9,7 @@ import { courseRiskFor } from "../lib/courseRisk";
 import { MAX_CRNS, sumCredits } from "../lib/schedule";
 import { creditsLabel, meetingLines } from "../lib/sectionText";
 import { BTN_GHOST, BTN_PRIMARY, BTN_PRIMARY_LG, BTN_SECONDARY, CARD } from "../lib/ui";
-import CourseRiskBadge from "./CourseRiskBadge";
+import CourseRiskBadge, { riskReasonLine } from "./CourseRiskBadge";
 
 function PlusIcon() {
   return (
@@ -43,7 +43,9 @@ function CourseRow({ section, active, riskLoading, analysis, onOpen, onRemove }:
       <button
         type="button"
         onClick={() => onOpen(section.crn)}
-        aria-label={`Open details for ${section.course_id}, ${section.title}`}
+        aria-label={`Open details for ${section.course_id}, ${section.title}${
+          risk ? `. ${risk.label}: ${riskReasonLine(risk)}` : ""
+        }`}
         aria-current={active ? "true" : undefined}
         className="flex w-full gap-3 rounded-t-xl p-3 text-left"
       >
@@ -60,7 +62,7 @@ function CourseRow({ section, active, riskLoading, analysis, onOpen, onRemove }:
                 {creditsLabel(section.credits)}
               </span>
             </span>
-            <CourseRiskBadge risk={risk} loading={riskLoading} />
+            <CourseRiskBadge risk={risk} loading={riskLoading} focusable={false} />
           </span>
           <span className="mt-0.5 block truncate text-sm text-ink-primary">{section.title}</span>
           <span className="mt-1 block truncate text-sm text-ink-secondary">{firstMeeting}</span>

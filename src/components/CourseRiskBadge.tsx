@@ -13,6 +13,12 @@ interface CourseRiskBadgeProps {
   risk: CourseRisk | null;
   /** Analysis is on its way, so show a placeholder instead of nothing. */
   loading?: boolean;
+  /**
+   * Keyboard-focusable tooltip trigger. Turn off inside another button or link
+   * (nested interactive controls are an accessibility failure); the reason is then
+   * hover-only and should be exposed elsewhere, such as the parent's label.
+   */
+  focusable?: boolean;
 }
 
 /** One-line reason built from the backend-reported flags for this course. */
@@ -27,7 +33,7 @@ export function riskReasonLine(risk: CourseRisk): string {
  * Per-course risk pill. Text is always present, so it never relies on color alone.
  * Hover or keyboard focus shows a one-line reason; Escape dismisses it.
  */
-export default function CourseRiskBadge({ risk, loading = false }: CourseRiskBadgeProps) {
+export default function CourseRiskBadge({ risk, loading = false, focusable = true }: CourseRiskBadgeProps) {
   const tooltipId = useId();
   const [open, setOpen] = useState(false);
 
@@ -35,15 +41,19 @@ export default function CourseRiskBadge({ risk, loading = false }: CourseRiskBad
     return (
       <span
         className="relative inline-flex"
-        tabIndex={0}
+        tabIndex={focusable ? 0 : undefined}
         aria-describedby={open ? tooltipId : undefined}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") setOpen(false);
-        }}
+        onFocus={focusable ? () => setOpen(true) : undefined}
+        onBlur={focusable ? () => setOpen(false) : undefined}
+        onKeyDown={
+          focusable
+            ? (event) => {
+                if (event.key === "Escape") setOpen(false);
+              }
+            : undefined
+        }
       >
         <Badge tone={LEVEL_TONE[risk.level]}>{risk.label}</Badge>
         {open ? (
