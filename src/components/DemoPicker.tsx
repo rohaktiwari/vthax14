@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDemoSchedules } from "../api/hooks";
 import { normalizeApiError } from "../api/errors";
 import { useSchedule } from "../context/ScheduleContext";
+import { BTN_PRIMARY, BTN_SECONDARY } from "../lib/ui";
 import ErrorState from "./ErrorState";
 import Skeleton from "./Skeleton";
 
@@ -41,7 +42,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
   if (query.isPending) {
     return (
       <div data-testid="demo-loading" aria-busy="true">
-        <p className="text-xs font-medium uppercase tracking-wide text-ink-secondary">{title}</p>
+        <p className="text-sm font-medium text-ink-secondary">{title}</p>
         <div className="mt-2 w-56">
           <Skeleton lines={2} />
         </div>
@@ -52,7 +53,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
   if (query.isError) {
     return (
       <div data-testid="demo-error">
-        <p className="text-xs font-medium uppercase tracking-wide text-ink-secondary">{title}</p>
+        <p className="text-sm font-medium text-ink-secondary">{title}</p>
         <div className="mt-2">
           <ErrorState
             title="Demo schedules unavailable"
@@ -76,7 +77,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
 
   return (
     <div data-testid="demo-picker">
-      <p className="text-xs font-medium uppercase tracking-wide text-ink-secondary">{title}</p>
+      <p className="text-sm font-medium text-ink-secondary">{title}</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {options.map((option) => (
           <button
@@ -85,11 +86,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
             data-testid={`demo-${option.key}`}
             aria-haspopup="false"
             onClick={() => request(option.key)}
-            className={`rounded-lg border px-3.5 py-2 text-sm font-medium shadow-sm transition-colors ${
-              pending === option.key
-                ? "border-maroon bg-maroon text-white"
-                : "border-maroon/40 bg-soft-maroon text-maroon hover:border-maroon hover:bg-maroon/10"
-            }`}
+            className={pending === option.key ? BTN_PRIMARY : BTN_SECONDARY}
           >
             {option.label}
           </button>
@@ -100,7 +97,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
         <div
           role="alert"
           data-testid="demo-confirm"
-          className="mt-3 rounded-xl border border-warning/40 bg-warm p-3 text-xs shadow-sm"
+          className="mt-3 rounded-xl border border-warning/40 bg-warning-soft p-3 text-sm shadow-sm"
         >
           <p className="font-semibold text-ink-primary">
             Replace your current {crns.length} selected section{crns.length === 1 ? "" : "s"}?
@@ -113,7 +110,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
               type="button"
               data-testid="demo-confirm-accept"
               onClick={() => apply(pendingOption.key)}
-              className="rounded-lg border border-maroon bg-maroon px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-maroon-dark"
+              className={BTN_PRIMARY}
             >
               Replace schedule
             </button>
@@ -121,7 +118,7 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
               type="button"
               data-testid="demo-confirm-cancel"
               onClick={() => setPending(null)}
-              className="rounded-lg border border-line bg-panel px-3 py-1.5 text-xs font-semibold text-ink-primary transition-colors hover:bg-soft-maroon"
+              className={BTN_SECONDARY}
             >
               Cancel
             </button>

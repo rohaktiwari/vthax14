@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as Reac
 import { useChat, useChatStatus } from "../api/hooks";
 import { normalizeApiError } from "../api/errors";
 import type { ChatMessage } from "../api/types";
+import { useCenterView } from "../context/CenterViewContext";
 import { useMapSelection } from "../context/MapSelectionContext";
 import { useProfessorDrawer } from "../context/ProfessorDrawerContext";
 import { useSchedule } from "../context/ScheduleContext";
@@ -56,6 +57,7 @@ function ThinkingBubble() {
 export default function AskGemini() {
   const { crns } = useSchedule();
   const { highlightedBuilding, highlightedCrns } = useMapSelection();
+  const { focusedCrn } = useCenterView();
   const { openTarget } = useProfessorDrawer();
   const chat = useChat();
 
@@ -155,7 +157,7 @@ export default function AskGemini() {
         crns,
         focus: {
           building: highlightedBuilding,
-          crn: highlightedCrns[0] ?? crns[0] ?? null,
+          crn: focusedCrn ?? highlightedCrns[0] ?? crns[0] ?? null,
           professor: openTarget?.displayName ?? null,
         },
       });
@@ -181,13 +183,13 @@ export default function AskGemini() {
   }
 
   return (
-    <div ref={containerRef} className="fixed bottom-6 right-6 z-40">
+    <div ref={containerRef} className="relative">
       {open ? (
         <div
           ref={panelRef}
           role="dialog"
           aria-label="Ask Gemini"
-          className="absolute bottom-full right-0 mb-3 flex h-[min(34rem,72vh)] w-[24rem] flex-col overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl"
+          className="absolute right-0 top-full z-50 mt-3 flex h-[min(34rem,calc(100dvh-6rem))] w-[24rem] flex-col overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl"
         >
           <div className="flex items-center gap-2 border-b border-line bg-soft-maroon px-4 py-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-maroon text-white">
@@ -324,9 +326,9 @@ export default function AskGemini() {
         aria-haspopup="dialog"
         aria-label="Open Ask Gemini"
         onClick={() => setOpen((value) => !value)}
-        className="flex h-12 items-center gap-2 rounded-full bg-maroon pl-4 pr-5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-maroon-dark"
+        className="flex h-10 items-center gap-2 rounded-full bg-maroon pl-3.5 pr-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-maroon-dark"
       >
-        <SparkleIcon className="h-5 w-5" />
+        <SparkleIcon className="h-4 w-4" />
         Ask Gemini
       </button>
     </div>

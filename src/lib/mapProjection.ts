@@ -31,7 +31,7 @@ export interface ProjectionResult {
 }
 
 /** Padding (fraction of the viewport) so markers never sit on the edge. */
-const EDGE_PAD = 0.08;
+const EDGE_PAD = 0.14;
 
 /** A finite lat/lng inside valid geographic bounds. */
 export function isValidCoordinate(

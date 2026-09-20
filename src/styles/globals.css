@@ -21,22 +21,29 @@
   --color-warning: #b54708; /* Warning */
   --color-danger: #b42318; /* Danger */
   --color-info: #175cd3; /* Info */
+  --color-success-soft: #ecfdf3; /* Badge surfaces; the matching text colors pass AA on these */
+  --color-warning-soft: #fffaeb;
+  --color-danger-soft: #fef3f2;
+  --color-info-soft: #eff8ff;
 
   /* One elevation scale used by every panel/card so depth stays consistent. */
   --shadow-card: 0 1px 2px rgb(30 36 48 / 0.05), 0 1px 3px rgb(30 36 48 / 0.06);
   --shadow-card-lg: 0 12px 28px -18px rgb(30 36 48 / 0.28), 0 2px 6px rgb(30 36 48 / 0.05);
 }
 
+/* Desktop-only workspace: the page never scrolls vertically (each panel scrolls on its
+   own). Below the minimum width the whole workspace scrolls sideways instead. */
 html {
   background-color: var(--color-bg-warm);
   color: var(--color-text-primary);
   -webkit-text-size-adjust: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 body {
-  min-width: 320px;
+  min-width: 1280px;
   height: 100%;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;

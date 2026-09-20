@@ -20,6 +20,10 @@ export default {
         warning: "var(--color-warning)",
         danger: "var(--color-danger)",
         info: "var(--color-info)",
+        "success-soft": "var(--color-success-soft)",
+        "warning-soft": "var(--color-warning-soft)",
+        "danger-soft": "var(--color-danger-soft)",
+        "info-soft": "var(--color-info-soft)",
       },
       fontFamily: {
         sans: ['"Inter"', '"Source Sans 3"', "system-ui", "-apple-system", '"Segoe UI"', "sans-serif"],

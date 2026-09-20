@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { apiGet, apiPost } from "./client";
 import { queryKeys } from "./queryKeys";
 import { MAX_CRNS } from "../lib/schedule";
@@ -76,12 +76,15 @@ export function useAnalyze() {
  * key includes the ordered CRN list, so a schedule change requests a fresh
  * analysis and cached results for other schedules are not reused.
  */
-export function useAnalysis(crns: string[]) {
+export function useAnalysis(crns: string[], options: { keepPrevious?: boolean } = {}) {
   return useQuery({
     queryKey: queryKeys.analysis(crns),
     queryFn: ({ signal }) => apiPost<AnalyzeResponse>("/analyze", { crns }, { signal }),
     enabled: crns.length >= 2 && crns.length <= MAX_CRNS,
     retry: false,
+    // Keep the last result on screen while a new selection is analyzed. Callers must
+    // check `isPlaceholderData` before treating it as the current schedule.
+    placeholderData: options.keepPrevious ? keepPreviousData : undefined,
   });
 }
 

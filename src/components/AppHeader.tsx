@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { normalizeApiError } from "../api/errors";
 import { useHealth } from "../api/hooks";
-
-interface AppHeaderProps {
-  /** Opens the search drawer on tablet; on desktop the sidebar is always visible. */
-  onOpenSearch: () => void;
-}
+import AskGemini from "./AskGemini";
 
 function Monogram() {
   return (
@@ -29,23 +25,6 @@ function Monogram() {
   );
 }
 
-function SearchIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-secondary"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-  );
-}
-
 /**
  * Live API-health indicator backed by the documented `GET /api/health` query
  * (frontend PRD §11.1). It shows a neutral checking state, a connected state
@@ -59,7 +38,7 @@ function ApiHealthStatus() {
     return (
       <span
         role="status"
-        className="hidden items-center gap-2 rounded-full border border-line bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary sm:inline-flex"
+        className="inline-flex items-center gap-2 rounded-full border border-line bg-warm px-3 py-1.5 text-sm font-medium text-ink-secondary"
       >
         <span className="h-2 w-2 animate-pulse rounded-full bg-warning" aria-hidden="true" />
         Checking API…
@@ -72,7 +51,7 @@ function ApiHealthStatus() {
       <span
         role="status"
         title={normalizeApiError(health.error).message}
-        className="hidden items-center gap-2 rounded-full border border-danger/40 bg-warm px-3 py-1.5 text-xs font-medium text-danger sm:inline-flex"
+        className="inline-flex items-center gap-2 rounded-full border border-danger/40 bg-danger-soft px-3 py-1.5 text-sm font-medium text-danger"
       >
         <span className="h-2 w-2 rounded-full bg-danger" aria-hidden="true" />
         API offline
@@ -84,7 +63,7 @@ function ApiHealthStatus() {
     <span
       role="status"
       title="Backend health from GET /api/health"
-      className="hidden items-center gap-2 rounded-full border border-line bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary sm:inline-flex"
+      className="inline-flex items-center gap-2 rounded-full border border-line bg-warm px-3 py-1.5 text-sm font-medium text-ink-secondary"
     >
       <span className="h-2 w-2 rounded-full bg-success" aria-hidden="true" />
       API connected · {health.data.term_id}
@@ -135,7 +114,7 @@ function AboutPopover() {
           <p className="font-semibold text-ink-primary">About HokieLens</p>
           <p className="mt-1 text-ink-secondary">
             HokieLens is a student-built planning aid for Virginia Tech course schedules. There are
-            no accounts and no registration access — just clearer trade-offs before you register.
+            no accounts and no registration access, just clearer trade-offs before you register.
           </p>
         </div>
       ) : null}
@@ -143,45 +122,24 @@ function AboutPopover() {
   );
 }
 
-export default function AppHeader({ onOpenSearch }: AppHeaderProps) {
-  // On desktop the sidebar search is already visible, so the header control
-  // moves focus there. On tablet/mobile the sidebar is hidden, so it opens the
-  // search drawer instead. This keeps the header affordance functional at every
-  // breakpoint rather than a dead click target (PRD §12).
-  function handleSearchTrigger() {
-    const desktopSearch = document.getElementById("sb-search");
-    if (desktopSearch && desktopSearch.offsetParent !== null) {
-      desktopSearch.focus();
-      return;
-    }
-    onOpenSearch();
-  }
-
+export default function AppHeader() {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-panel/95 px-4 shadow-sm backdrop-blur sm:gap-4 sm:px-6">
+    <header className="z-30 flex h-16 shrink-0 items-center gap-4 border-b border-line bg-panel px-6 shadow-sm">
       <div className="flex min-w-0 items-center gap-3">
         <Monogram />
         <div className="min-w-0">
           <p className="truncate text-xl font-extrabold uppercase leading-tight tracking-[0.02em] text-ink-primary">
             Hokie<span className="text-maroon">Lens</span>
           </p>
-          <p className="hidden truncate text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-ink-secondary xs:block sm:block">
+          <p className="truncate text-xs font-medium uppercase tracking-[0.18em] text-ink-secondary">
             Plan Smarter. Study Happier.
           </p>
         </div>
       </div>
 
-      <div className="ml-auto flex items-center gap-2 sm:gap-3">
-        <button
-          type="button"
-          onClick={handleSearchTrigger}
-          aria-label="Search courses"
-          className="relative flex w-48 max-w-[44vw] cursor-pointer items-center rounded-full border border-line bg-warm py-2 pl-9 pr-4 text-left text-sm font-medium text-ink-secondary shadow-sm transition-colors hover:border-maroon/40 hover:bg-soft-maroon hover:text-ink-primary sm:w-72"
-        >
-          <SearchIcon />
-          <span className="truncate">Find a course</span>
-        </button>
+      <div className="ml-auto flex items-center gap-3">
         <ApiHealthStatus />
+        <AskGemini />
         <AboutPopover />
       </div>
     </header>

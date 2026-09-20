@@ -1,62 +1,80 @@
-import type { CommuteWarning, CommuteVerdict } from "../api/types";
-import { formatWeekdayShort } from "../lib/time";
+import type { CommuteVerdict, CommuteWarning, Section } from "../api/types";
 import { verdictLabel } from "../lib/risk";
+import { formatWeekdayShort } from "../lib/time";
+import type { Tone } from "../lib/ui";
+import Badge from "./Badge";
 
-const VERDICT_CLASSES: Record<CommuteVerdict, string> = {
-  comfortable: "border-success/40 bg-panel text-success",
-  tight: "border-warning/50 bg-panel text-warning",
-  impossible: "border-danger/50 bg-panel text-danger",
+const VERDICT_TONE: Record<CommuteVerdict, Tone> = {
+  comfortable: "success",
+  tight: "warning",
+  impossible: "danger",
 };
+
+const PREVIEW_COUNT = 3;
+
+interface CommuteWarningsProps {
+  warnings: CommuteWarning[];
+  sections: readonly Section[];
+}
+
+function WarningRow({ warning, names }: { warning: CommuteWarning; names: Map<string, string> }) {
+  const from = names.get(warning.from.crn) ?? warning.from.crn;
+  const to = names.get(warning.to.crn) ?? warning.to.crn;
+  return (
+    <li className="rounded-xl border border-line bg-warm/40 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-ink-primary">
+          {formatWeekdayShort(warning.day)} · {from} → {to}
+        </p>
+        <Badge tone={VERDICT_TONE[warning.verdict]}>{verdictLabel(warning.verdict)}</Badge>
+      </div>
+      <p className="mt-1 text-sm text-ink-secondary">
+        {warning.from.building} to {warning.to.building}: {warning.walk_min} min walk, {warning.gap_min} min
+        between classes.
+      </p>
+    </li>
+  );
+}
 
 /**
  * Backend commute warnings, rendered exactly. The backend returns only tight
  * and impossible transitions; the frontend never re-derives verdicts from
- * thresholds. Verdict is stated in text as well as color.
+ * thresholds. Verdict is stated in text as well as color. Only the first few
+ * show; the rest sit behind one disclosure to keep the panel short.
  */
-export default function CommuteWarnings({ warnings }: { warnings: CommuteWarning[] }) {
+export default function CommuteWarnings({ warnings, sections }: CommuteWarningsProps) {
+  const names = new Map(sections.map((section) => [section.crn, section.course_id]));
+  const preview = warnings.slice(0, PREVIEW_COUNT);
+  const rest = warnings.slice(PREVIEW_COUNT);
+
   return (
     <section aria-label="Commute warnings">
-      <h3 className="text-sm font-semibold text-ink-primary">Commute warnings</h3>
+      <h3 className="text-base font-semibold text-ink-primary">Walking between classes</h3>
 
       {warnings.length === 0 ? (
-        <p className="mt-2 rounded-lg border border-line bg-warm px-3 py-2 text-xs text-ink-secondary">
-          No tight or impossible walking transitions were reported.
+        <p className="mt-2 rounded-lg border border-success/30 bg-success-soft px-3 py-2 text-sm text-success">
+          No tight or impossible walks. Every gap between classes leaves enough time.
         </p>
       ) : (
-        <ul className="mt-2 space-y-3">
-          {warnings.map((warning, index) => (
-            <li key={`${warning.day}-${warning.from.crn}-${warning.to.crn}-${index}`} className="rounded-xl border border-line bg-warm/40 p-3 shadow-sm">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium text-ink-primary">
-                  {formatWeekdayShort(warning.day)} · {warning.from.crn} → {warning.to.crn}
-                </p>
-                <span
-                  className={`shrink-0 rounded-full border px-2 py-0.5 text-[0.6875rem] font-semibold ${VERDICT_CLASSES[warning.verdict]}`}
-                >
-                  {verdictLabel(warning.verdict)}
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-ink-secondary">
-                {warning.from.building} ({warning.from.ends}) → {warning.to.building} ({warning.to.starts})
-              </p>
-              <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
-                <div>
-                  <dt className="text-ink-secondary">Walk</dt>
-                  <dd className="font-semibold text-ink-primary">{warning.walk_min} min</dd>
-                </div>
-                <div>
-                  <dt className="text-ink-secondary">Adjusted</dt>
-                  <dd className="font-semibold text-ink-primary">{warning.adjusted_walk_min} min</dd>
-                </div>
-                <div>
-                  <dt className="text-ink-secondary">Gap</dt>
-                  <dd className="font-semibold text-ink-primary">{warning.gap_min} min</dd>
-                </div>
-              </dl>
-              <p className="mt-2 text-xs text-ink-secondary">{warning.detail}</p>
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="mt-2 space-y-2">
+            {preview.map((warning, index) => (
+              <WarningRow key={`${warning.day}-${warning.from.crn}-${warning.to.crn}-${index}`} warning={warning} names={names} />
+            ))}
+          </ul>
+          {rest.length > 0 ? (
+            <details className="mt-2">
+              <summary className="cursor-pointer text-sm font-semibold text-maroon">
+                Show {rest.length} more
+              </summary>
+              <ul className="mt-2 space-y-2">
+                {rest.map((warning, index) => (
+                  <WarningRow key={`${warning.day}-${warning.from.crn}-${warning.to.crn}-r${index}`} warning={warning} names={names} />
+                ))}
+              </ul>
+            </details>
+          ) : null}
+        </>
       )}
     </section>
   );
