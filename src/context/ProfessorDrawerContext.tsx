@@ -25,6 +25,7 @@ export interface ProfessorDrawerController {
   openProfessor: (target: ProfessorDrawerTarget, returnFocusTo?: HTMLElement | null) => void;
   closeProfessor: () => void;
   isOpen: boolean;
+  openTarget: ProfessorDrawerTarget | null;
 }
 
 /** No-op default so instructor-name triggers render in isolated tests. */
@@ -32,6 +33,7 @@ const DEFAULT_CONTROLLER: ProfessorDrawerController = {
   openProfessor: () => {},
   closeProfessor: () => {},
   isOpen: false,
+  openTarget: null,
 };
 
 const ProfessorDrawerContext = createContext<ProfessorDrawerController>(DEFAULT_CONTROLLER);
@@ -87,7 +89,12 @@ export function ProfessorDrawerProvider({ children }: { children: ReactNode }) {
   const closeProfessor = useCallback(() => setState(null), []);
 
   const value = useMemo<ProfessorDrawerController>(
-    () => ({ openProfessor, closeProfessor, isOpen: state !== null }),
+    () => ({
+      openProfessor,
+      closeProfessor,
+      isOpen: state !== null,
+      openTarget: state?.target ?? null,
+    }),
     [openProfessor, closeProfessor, state],
   );
 

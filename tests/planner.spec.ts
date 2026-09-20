@@ -270,6 +270,13 @@ async function stubApi(page: Page, options: StubOptions = {}): Promise<void> {
     }
     if (method === "POST" && path === "/api/swap") return json(route, 200, swapFixture);
     if (method === "POST" && path === "/api/stress") return json(route, 200, stressFixture);
+    if (path === "/api/chat/status") return json(route, 200, { enabled: false });
+    if (method === "POST" && path === "/api/chat") {
+      return json(route, 200, {
+        reply: "Ask Gemini is off on this server. The planner still works.",
+        source: "unavailable",
+      });
+    }
 
     return route.fallback();
   });
@@ -484,8 +491,8 @@ test("keyboard-only user can reach search and the help panel", async ({ page }) 
   await page.keyboard.type("CS");
   await expect(page.getByRole("button", { name: "Search Classes" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Open Ask HokieLens help" }).click();
-  const help = page.getByRole("dialog", { name: "Ask HokieLens" });
+  await page.getByRole("button", { name: "Open Ask Gemini" }).click();
+  const help = page.getByRole("dialog", { name: "Ask Gemini" });
   await expect(help).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(help).toBeHidden();

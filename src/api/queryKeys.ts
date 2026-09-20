@@ -15,4 +15,6 @@ export const queryKeys = {
   swap: ["swap"] as const,
   stress: ["stress"] as const,
   professorVibes: (surname: string) => ["professors", surname, "vibes"] as const,
+  chatStatus: ["chat", "status"] as const,
+  chat: ["chat"] as const,
 };

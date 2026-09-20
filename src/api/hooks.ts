@@ -15,14 +15,14 @@ import type {
   SwapRequest,
   SwapResponse,
   VibesResponse,
+  ChatRequest,
+  ChatResponse,
+  ChatStatusResponse,
 } from "./types";
 
 /**
- * TanStack Query hooks for the eight documented endpoints only.
- *
- * Phase 2 wires the two startup queries (health, demo schedules). The remaining
- * hooks are typed and ready but are not used by UI components yet; no search,
- * selection, calendar, or analysis behavior is built in this phase.
+ * TanStack Query hooks for the eight documented planner endpoints, plus the
+ * optional Ask Gemini chat routes (hidden from OpenAPI; default off).
  */
 
 /** GET /api/health — header status indicator and startup diagnostics. */
@@ -111,5 +111,23 @@ export function useProfessorVibes(surname: string) {
     queryFn: ({ signal }) =>
       apiGet<VibesResponse>(`/professors/${encodeURIComponent(surname)}/vibes`, { signal }),
     enabled: surname.trim().length > 0,
+  });
+}
+
+/** GET /api/chat/status — whether the server has a Gemini key configured. */
+export function useChatStatus(enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.chatStatus,
+    queryFn: ({ signal }) => apiGet<ChatStatusResponse>("/chat/status", { signal }),
+    enabled,
+    retry: false,
+  });
+}
+
+/** POST /api/chat — grounded Gemini reply; never retries. 25s budget for the model. */
+export function useChat() {
+  return useMutation({
+    mutationKey: queryKeys.chat,
+    mutationFn: (body: ChatRequest) => apiPost<ChatResponse>("/chat", body, { timeoutMs: 25_000 }),
   });
 }

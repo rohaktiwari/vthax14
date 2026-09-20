@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AppHeader from "../components/AppHeader";
-import HelpButton from "../components/HelpButton";
+import AskGemini from "../components/AskGemini";
 import HeroPanel from "../components/HeroPanel";
 import CenterPanel from "../components/CenterPanel";
 import SearchSidebar from "../components/SearchSidebar";
@@ -29,7 +29,7 @@ const MOBILE_TABS: { id: MobileView; label: string }[] = [
 
 function Disclaimers() {
   return (
-    <footer className="border-t border-line bg-panel px-4 py-3 text-center text-xs text-ink-secondary">
+    <footer className="shrink-0 border-t border-line bg-panel px-4 py-3 pb-16 text-center text-xs text-ink-secondary md:pb-3">
       HokieLens is a student-built planning tool and is not an official Virginia Tech registration
       service.
     </footer>
@@ -100,12 +100,12 @@ export default function PlannerPage() {
         Skip to main content
       </a>
       <div className="print:hidden">
-      <div className="flex min-h-dvh flex-col bg-warm text-ink-primary">
+      <div className="flex h-dvh flex-col overflow-hidden bg-warm text-ink-primary">
         <AppHeader onOpenSearch={() => setSearchOpen(true)} />
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto lg:overflow-hidden">
         {/* Desktop three-column shell */}
-        <div className="mx-auto hidden max-w-[1800px] lg:grid lg:h-[calc(100dvh-4rem-2.75rem)] lg:grid-cols-[290px_minmax(0,1.02fr)_minmax(0,1fr)] lg:gap-5 lg:px-6 lg:py-5 xl:px-8">
+        <div className="mx-auto hidden h-full max-w-[1800px] lg:grid lg:grid-cols-[290px_minmax(0,1.02fr)_minmax(0,1fr)] lg:gap-5 lg:px-6 lg:py-5 xl:px-8">
           <aside className="min-h-0 overflow-hidden">
             <SearchSidebar showResults={false} />
           </aside>
@@ -206,7 +206,7 @@ export default function PlannerPage() {
         ))}
       </nav>
 
-      <HelpButton />
+      <AskGemini />
       </div>
       </div>
       <PrintSchedule />
