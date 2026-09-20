@@ -1,0 +1,18 @@
+; HokieLens — GoDaddy Agent Name Service (ANS) DNS records
+; Replace YOUR_DOMAIN with the FQDN purchased at GoDaddy and set
+; HOKIELENS_PUBLIC_URL=https://YOUR_DOMAIN before serving the API.
+;
+; 1. Point the domain at the public HokieLens host (A/AAAA or CNAME).
+; 2. Serve GET https://YOUR_DOMAIN/.well-known/agent-card.json
+;    (uvicorn main:app already does this; no API key required).
+; 3. Publish the ANS discovery TXT so other agents can look HokieLens up
+;    the same way they look up a website — by name, on the public DNS.
+
+_ans.YOUR_DOMAIN.  300  IN  TXT  "v=ansv2; name=HokieLens; ver=0.1.0; url=https://YOUR_DOMAIN/.well-known/agent-card.json"
+
+; Optional aliases used by some ANS clients:
+;   https://YOUR_DOMAIN/.well-known/ans/agent.json
+;   https://YOUR_DOMAIN/.well-known/ans/registration.json
+;
+; Live Registration Authority signup (certificates + ACME) is a human step.
+; See backend/README.md → "GoDaddy ANS".

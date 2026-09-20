@@ -1,0 +1,512 @@
+{
+  "factors": [
+    {
+      "affected_crns": "90001",
+      "detail": "1 heavy-workload course (3 credits): CS 3114",
+      "factor_type": "workload_collision",
+      "max_severity": "30.0",
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "severity": "2.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "Densest day M: 1.7 contact hours, 1 tight gap (\u226410 min), longest unbroken block 1.8 h; weekly density score 6.0.",
+      "factor_type": "back_to_back_density",
+      "max_severity": "25.0",
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "severity": "10.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "3 impossible and 0 tight walking transition(s) on M, W, F.",
+      "factor_type": "commute",
+      "max_severity": "20.0",
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "severity": "20.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "Credit-weighted grade volatility \u03c3 0.32 across 2 sections with instructor history: CS 3114 (\u03c3 0.38), MATH 2534 (\u03c3 0.27)",
+      "factor_type": "grade_volatility",
+      "max_severity": "15.0",
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "severity": "6.1"
+    },
+    {
+      "affected_crns": "90001|90003|90008",
+      "detail": "Credit-weighted instructor difficulty 3.17/5 across 9 credits (1 section at the default 3.0).",
+      "factor_type": "difficulty_load",
+      "max_severity": "10.0",
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "severity": "3.3"
+    },
+    {
+      "affected_crns": "90001|90002|90005|90007",
+      "detail": "4 heavy-workload sections across 3 courses (13 credits): CS 3114, CS 2505, PHYS 2305",
+      "factor_type": "workload_collision",
+      "max_severity": "30.0",
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "severity": "26.0"
+    },
+    {
+      "affected_crns": "90001|90003|90002|90005|90007",
+      "detail": "Densest day M: 2.5 contact hours, 2 tight gaps (\u226410 min), longest unbroken block 2.8 h; weekly density score 16.0.",
+      "factor_type": "back_to_back_density",
+      "max_severity": "25.0",
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "severity": "25.0"
+    },
+    {
+      "affected_crns": "90001|90003|90007|90002|90005",
+      "detail": "6 impossible and 2 tight walking transition(s) on M, T, W, R, F.",
+      "factor_type": "commute",
+      "max_severity": "20.0",
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "severity": "20.0"
+    },
+    {
+      "affected_crns": "90001|90003|90002|90005|90007",
+      "detail": "Credit-weighted grade volatility \u03c3 0.34 across 5 sections with instructor history: CS 3114 (\u03c3 0.38), MATH 2534 (\u03c3 0.27), CS 2505 (\u03c3 0.33), PHYS 2305 (\u03c3 0.41), CS 2505 (\u03c3 0.33)",
+      "factor_type": "grade_volatility",
+      "max_severity": "15.0",
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "severity": "6.5"
+    },
+    {
+      "affected_crns": "90001|90003|90002|90005|90007",
+      "detail": "Credit-weighted instructor difficulty 3.69/5 across 16 credits.",
+      "factor_type": "difficulty_load",
+      "max_severity": "10.0",
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "severity": "6.0"
+    },
+    {
+      "affected_crns": "90001",
+      "detail": "1 heavy-workload course (3 credits): CS 3114",
+      "factor_type": "workload_collision",
+      "max_severity": "30.0",
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "severity": "2.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "Densest day M: 1.7 contact hours, 1 tight gap (\u226410 min), longest unbroken block 1.8 h; weekly density score 6.0.",
+      "factor_type": "back_to_back_density",
+      "max_severity": "25.0",
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "severity": "10.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "3 impossible and 0 tight walking transition(s) on M, W, F.",
+      "factor_type": "commute",
+      "max_severity": "20.0",
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "severity": "20.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "Credit-weighted grade volatility \u03c3 0.32 across 2 sections with instructor history: CS 3114 (\u03c3 0.38), MATH 2534 (\u03c3 0.27)",
+      "factor_type": "grade_volatility",
+      "max_severity": "15.0",
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "severity": "6.1"
+    },
+    {
+      "affected_crns": "90001|90003|90008",
+      "detail": "Credit-weighted instructor difficulty 3.17/5 across 9 credits (1 section at the default 3.0).",
+      "factor_type": "difficulty_load",
+      "max_severity": "10.0",
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "severity": "3.3"
+    },
+    {
+      "affected_crns": "90001|90002",
+      "detail": "2 heavy-workload courses (6 credits): CS 3114, CS 2505",
+      "factor_type": "workload_collision",
+      "max_severity": "30.0",
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "severity": "8.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "Densest day M: 1.7 contact hours, 1 tight gap (\u226410 min), longest unbroken block 1.8 h; weekly density score 6.0.",
+      "factor_type": "back_to_back_density",
+      "max_severity": "25.0",
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "severity": "10.0"
+    },
+    {
+      "affected_crns": "90001|90003",
+      "detail": "3 impossible and 0 tight walking transition(s) on M, W, F.",
+      "factor_type": "commute",
+      "max_severity": "20.0",
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "severity": "20.0"
+    },
+    {
+      "affected_crns": "90001|90003|90002",
+      "detail": "Credit-weighted grade volatility \u03c3 0.32 across 3 sections with instructor history: CS 3114 (\u03c3 0.38), MATH 2534 (\u03c3 0.27), CS 2505 (\u03c3 0.33)",
+      "factor_type": "grade_volatility",
+      "max_severity": "15.0",
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "severity": "6.1"
+    },
+    {
+      "affected_crns": "90001|90003|90002",
+      "detail": "Credit-weighted instructor difficulty 3.43/5 across 9 credits.",
+      "factor_type": "difficulty_load",
+      "max_severity": "10.0",
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "severity": "4.7"
+    },
+    {
+      "affected_crns": "90001|90002",
+      "detail": "2 heavy-workload courses (6 credits): CS 3114, CS 2505",
+      "factor_type": "workload_collision",
+      "max_severity": "30.0",
+      "scenario": "swap_after",
+      "schedule_id": "swap",
+      "severity": "8.0"
+    },
+    {
+      "affected_crns": "",
+      "detail": "No dense weekday; heaviest is M: 0.8 contact hours, 0 tight gaps (\u226410 min), longest unbroken block 0.8 h; weekly density score 0.0.",
+      "factor_type": "back_to_back_density",
+      "max_severity": "25.0",
+      "scenario": "swap_after",
+      "schedule_id": "swap",
+      "severity": "0.0"
+    },
+    {
+      "affected_crns": "",
+      "detail": "No tight or impossible walking transitions.",
+      "factor_type": "commute",
+      "max_severity": "20.0",
+      "scenario": "swap_after",
+      "schedule_id": "swap",
+      "severity": "0.0"
+    },
+    {
+      "affected_crns": "90001|90002",
+      "detail": "Credit-weighted grade volatility \u03c3 0.35 across 2 sections with instructor history: CS 3114 (\u03c3 0.38), CS 2505 (\u03c3 0.33)",
+      "factor_type": "grade_volatility",
+      "max_severity": "15.0",
+      "scenario": "swap_after",
+      "schedule_id": "swap",
+      "severity": "6.6"
+    },
+    {
+      "affected_crns": "90001|90004|90002",
+      "detail": "Credit-weighted instructor difficulty 3.47/5 across 9 credits (1 section at the default 3.0).",
+      "factor_type": "difficulty_load",
+      "max_severity": "10.0",
+      "scenario": "swap_after",
+      "schedule_id": "swap",
+      "severity": "4.8"
+    }
+  ],
+  "schedules": [
+    {
+      "credits": "9",
+      "delta": 0,
+      "gpa_hi": "3.65",
+      "gpa_lo": "2.99",
+      "gpa_mean": "3.32",
+      "label": "Balanced schedule",
+      "n_impossible": 3,
+      "n_sections": 3,
+      "n_tight": 0,
+      "risk_score": 41,
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "stressed_risk": 41
+    },
+    {
+      "credits": "16",
+      "delta": 0,
+      "gpa_hi": "3.34",
+      "gpa_lo": "2.64",
+      "gpa_mean": "2.99",
+      "label": "The wall of pain",
+      "n_impossible": 6,
+      "n_sections": 5,
+      "n_tight": 2,
+      "risk_score": 84,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "stressed_risk": 84
+    },
+    {
+      "credits": "9",
+      "delta": 5,
+      "gpa_hi": "3.65",
+      "gpa_lo": "2.99",
+      "gpa_mean": "3.32",
+      "label": "Balanced schedule",
+      "n_impossible": 3,
+      "n_sections": 3,
+      "n_tight": 0,
+      "risk_score": 41,
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "stressed_risk": 46
+    },
+    {
+      "credits": "9",
+      "delta": 0,
+      "gpa_hi": "3.46",
+      "gpa_lo": "2.81",
+      "gpa_mean": "3.14",
+      "label": "swap_demo before",
+      "n_impossible": 3,
+      "n_sections": 3,
+      "n_tight": 0,
+      "risk_score": 49,
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "stressed_risk": 49
+    },
+    {
+      "credits": "9",
+      "delta": -30,
+      "gpa_hi": "3.31",
+      "gpa_lo": "2.60",
+      "gpa_mean": "2.96",
+      "label": "swap_demo after",
+      "n_impossible": 0,
+      "n_sections": 3,
+      "n_tight": 0,
+      "risk_score": 19,
+      "scenario": "swap_after",
+      "schedule_id": "swap",
+      "stressed_risk": 19
+    }
+  ],
+  "warnings": [
+    {
+      "day": "M",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "W",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "F",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "easy",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "M",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "M",
+      "from_building": "WHI",
+      "from_crn": "90003",
+      "gap_min": 5,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "TORG",
+      "to_crn": "90007",
+      "verdict": "impossible",
+      "walk_min": 15
+    },
+    {
+      "day": "T",
+      "from_building": "TORG",
+      "from_crn": "90002",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "WHI",
+      "to_crn": "90005",
+      "verdict": "tight",
+      "walk_min": 15
+    },
+    {
+      "day": "W",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "W",
+      "from_building": "WHI",
+      "from_crn": "90003",
+      "gap_min": 5,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "TORG",
+      "to_crn": "90007",
+      "verdict": "impossible",
+      "walk_min": 15
+    },
+    {
+      "day": "R",
+      "from_building": "TORG",
+      "from_crn": "90002",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "WHI",
+      "to_crn": "90005",
+      "verdict": "tight",
+      "walk_min": 15
+    },
+    {
+      "day": "F",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "F",
+      "from_building": "WHI",
+      "from_crn": "90003",
+      "gap_min": 5,
+      "scenario": "analyze",
+      "schedule_id": "brutal",
+      "to_building": "TORG",
+      "to_crn": "90007",
+      "verdict": "impossible",
+      "walk_min": 15
+    },
+    {
+      "day": "M",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "W",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "F",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "miss_week_8",
+      "schedule_id": "easy",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "M",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "W",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    },
+    {
+      "day": "F",
+      "from_building": "MCB",
+      "from_crn": "90001",
+      "gap_min": 10,
+      "scenario": "swap_before",
+      "schedule_id": "swap",
+      "to_building": "WHI",
+      "to_crn": "90003",
+      "verdict": "impossible",
+      "walk_min": 18
+    }
+  ]
+}

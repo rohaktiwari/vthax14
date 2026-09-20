@@ -1,0 +1,26 @@
+schedule_id,scenario,factor_type,severity,max_severity,detail,affected_crns
+easy,analyze,workload_collision,2.0,30.0,1 heavy-workload course (3 credits): CS 3114,90001
+easy,analyze,back_to_back_density,10.0,25.0,"Densest day M: 1.7 contact hours, 1 tight gap (≤10 min), longest unbroken block 1.8 h; weekly density score 6.0.",90001|90003
+easy,analyze,commute,20.0,20.0,"3 impossible and 0 tight walking transition(s) on M, W, F.",90001|90003
+easy,analyze,grade_volatility,6.1,15.0,"Credit-weighted grade volatility σ 0.32 across 2 sections with instructor history: CS 3114 (σ 0.38), MATH 2534 (σ 0.27)",90001|90003
+easy,analyze,difficulty_load,3.3,10.0,Credit-weighted instructor difficulty 3.17/5 across 9 credits (1 section at the default 3.0).,90001|90003|90008
+brutal,analyze,workload_collision,26.0,30.0,"4 heavy-workload sections across 3 courses (13 credits): CS 3114, CS 2505, PHYS 2305",90001|90002|90005|90007
+brutal,analyze,back_to_back_density,25.0,25.0,"Densest day M: 2.5 contact hours, 2 tight gaps (≤10 min), longest unbroken block 2.8 h; weekly density score 16.0.",90001|90003|90002|90005|90007
+brutal,analyze,commute,20.0,20.0,"6 impossible and 2 tight walking transition(s) on M, T, W, R, F.",90001|90003|90007|90002|90005
+brutal,analyze,grade_volatility,6.5,15.0,"Credit-weighted grade volatility σ 0.34 across 5 sections with instructor history: CS 3114 (σ 0.38), MATH 2534 (σ 0.27), CS 2505 (σ 0.33), PHYS 2305 (σ 0.41), CS 2505 (σ 0.33)",90001|90003|90002|90005|90007
+brutal,analyze,difficulty_load,6.0,10.0,Credit-weighted instructor difficulty 3.69/5 across 16 credits.,90001|90003|90002|90005|90007
+easy,miss_week_8,workload_collision,2.0,30.0,1 heavy-workload course (3 credits): CS 3114,90001
+easy,miss_week_8,back_to_back_density,10.0,25.0,"Densest day M: 1.7 contact hours, 1 tight gap (≤10 min), longest unbroken block 1.8 h; weekly density score 6.0.",90001|90003
+easy,miss_week_8,commute,20.0,20.0,"3 impossible and 0 tight walking transition(s) on M, W, F.",90001|90003
+easy,miss_week_8,grade_volatility,6.1,15.0,"Credit-weighted grade volatility σ 0.32 across 2 sections with instructor history: CS 3114 (σ 0.38), MATH 2534 (σ 0.27)",90001|90003
+easy,miss_week_8,difficulty_load,3.3,10.0,Credit-weighted instructor difficulty 3.17/5 across 9 credits (1 section at the default 3.0).,90001|90003|90008
+swap,swap_before,workload_collision,8.0,30.0,"2 heavy-workload courses (6 credits): CS 3114, CS 2505",90001|90002
+swap,swap_before,back_to_back_density,10.0,25.0,"Densest day M: 1.7 contact hours, 1 tight gap (≤10 min), longest unbroken block 1.8 h; weekly density score 6.0.",90001|90003
+swap,swap_before,commute,20.0,20.0,"3 impossible and 0 tight walking transition(s) on M, W, F.",90001|90003
+swap,swap_before,grade_volatility,6.1,15.0,"Credit-weighted grade volatility σ 0.32 across 3 sections with instructor history: CS 3114 (σ 0.38), MATH 2534 (σ 0.27), CS 2505 (σ 0.33)",90001|90003|90002
+swap,swap_before,difficulty_load,4.7,10.0,Credit-weighted instructor difficulty 3.43/5 across 9 credits.,90001|90003|90002
+swap,swap_after,workload_collision,8.0,30.0,"2 heavy-workload courses (6 credits): CS 3114, CS 2505",90001|90002
+swap,swap_after,back_to_back_density,0.0,25.0,"No dense weekday; heaviest is M: 0.8 contact hours, 0 tight gaps (≤10 min), longest unbroken block 0.8 h; weekly density score 0.0.",
+swap,swap_after,commute,0.0,20.0,No tight or impossible walking transitions.,
+swap,swap_after,grade_volatility,6.6,15.0,"Credit-weighted grade volatility σ 0.35 across 2 sections with instructor history: CS 3114 (σ 0.38), CS 2505 (σ 0.33)",90001|90002
+swap,swap_after,difficulty_load,4.8,10.0,Credit-weighted instructor difficulty 3.47/5 across 9 credits (1 section at the default 3.0).,90001|90004|90002

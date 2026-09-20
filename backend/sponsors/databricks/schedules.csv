@@ -1,0 +1,6 @@
+schedule_id,label,scenario,risk_score,stressed_risk,delta,gpa_mean,gpa_lo,gpa_hi,n_sections,n_tight,n_impossible,credits
+easy,Balanced schedule,analyze,41,41,0,3.32,2.99,3.65,3,0,3,9
+brutal,The wall of pain,analyze,84,84,0,2.99,2.64,3.34,5,2,6,16
+easy,Balanced schedule,miss_week_8,41,46,5,3.32,2.99,3.65,3,0,3,9
+swap,swap_demo before,swap_before,49,49,0,3.14,2.81,3.46,3,0,3,9
+swap,swap_demo after,swap_after,19,19,-30,2.96,2.60,3.31,3,0,0,9
