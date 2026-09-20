@@ -6,7 +6,7 @@ import { MemoryRouter, useSearchParams } from "react-router-dom";
 import { API_BASE_URL } from "../api/client";
 import type { DemoSchedulesResponse } from "../api/types";
 import { server } from "../test/msw/server";
-import { demoSchedulesFixture, swapFixture } from "../test/fixtures";
+import { demoSchedulesFixture } from "../test/fixtures";
 import { ScheduleProvider } from "../context/ScheduleContext";
 import DemoPicker from "./DemoPicker";
 
@@ -15,17 +15,8 @@ function LocationProbe() {
   return <output data-testid="crns">{params.get("crns") ?? ""}</output>;
 }
 
-function mockDemos(
-  response: DemoSchedulesResponse,
-  swapCalls?: { count: number },
-) {
-  server.use(
-    http.get(`${API_BASE_URL}/demo/schedules`, () => HttpResponse.json(response)),
-    http.post(`${API_BASE_URL}/swap`, () => {
-      if (swapCalls) swapCalls.count += 1;
-      return HttpResponse.json(swapFixture);
-    }),
-  );
+function mockDemos(response: DemoSchedulesResponse) {
+  server.use(http.get(`${API_BASE_URL}/demo/schedules`, () => HttpResponse.json(response)));
 }
 
 function renderPicker(initialEntry = "/") {
@@ -56,7 +47,7 @@ describe("DemoPicker", () => {
 
     expect(await screen.findByRole("button", { name: "Custom balanced" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Custom brutal" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Swap demo" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /swap/i })).toBeNull();
   });
 
   it("loads a demo without confirmation when nothing is selected", async () => {
@@ -103,19 +94,5 @@ describe("DemoPicker", () => {
 
     expect(screen.queryByTestId("demo-confirm")).toBeNull();
     expect(screen.getByTestId("crns").textContent).toBe("11111");
-  });
-
-  it("prefills the swap draft without making a swap request", async () => {
-    const swapCalls = { count: 0 };
-    mockDemos(demoSchedulesFixture, swapCalls);
-    renderPicker();
-
-    fireEvent.click(await screen.findByTestId("demo-swap"));
-
-    await waitFor(() => expect(screen.getByTestId("crns").textContent).toBe("90001,90003,90002"));
-    const draft = await screen.findByTestId("swap-draft");
-    expect(draft.textContent).toContain("90003");
-    expect(draft.textContent).toContain("90004");
-    expect(swapCalls.count).toBe(0);
   });
 });

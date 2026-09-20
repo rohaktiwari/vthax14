@@ -5,8 +5,6 @@ import {
   courseSearchFixture,
   demoSchedulesFixture,
   healthFixture,
-  stressFixture,
-  swapFixture,
   vibesFixture,
 } from "../fixtures";
 
@@ -37,10 +35,6 @@ export const handlers = [
   }),
 
   http.post(`${BASE}/analyze`, () => HttpResponse.json(analyzeFixture)),
-
-  http.post(`${BASE}/swap`, () => HttpResponse.json(swapFixture)),
-
-  http.post(`${BASE}/stress`, () => HttpResponse.json(stressFixture)),
 
   http.get(`${BASE}/professors/:surname/vibes`, () => HttpResponse.json(vibesFixture)),
 

@@ -31,13 +31,22 @@ html {
   background-color: var(--color-bg-warm);
   color: var(--color-text-primary);
   -webkit-text-size-adjust: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
   min-width: 320px;
+  height: 100%;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
 }
 
 ::selection {
@@ -126,7 +135,10 @@ textarea:focus-visible,
  */
 @media print {
   html,
-  body {
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
     background: #ffffff !important;
   }
 

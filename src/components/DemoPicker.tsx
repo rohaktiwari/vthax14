@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useDemoSchedules } from "../api/hooks";
 import { normalizeApiError } from "../api/errors";
 import { useSchedule } from "../context/ScheduleContext";
-import { useSwapWorkbench } from "../context/SwapWorkbenchContext";
 import ErrorState from "./ErrorState";
 import Skeleton from "./Skeleton";
 
-type DemoKey = "easy" | "brutal" | "swap";
+type DemoKey = "easy" | "brutal";
 
 interface DemoPickerProps {
   title?: string;
@@ -17,29 +16,17 @@ interface DemoPickerProps {
  *
  * Every CRN comes from `GET /api/demo/schedules`; none are hardcoded. Selecting
  * a demo replaces the current schedule, after an inline confirmation when a
- * selection already exists. `swap_demo` only prefills the swap draft as UI
- * state — no swap request is made in this phase.
+ * selection already exists.
  */
 export default function DemoPicker({ title = "Start from a demo schedule" }: DemoPickerProps) {
   const query = useDemoSchedules();
-  const { crns, setSchedule, demoSwapDraft, setDemoSwapDraft } = useSchedule();
-  const { openSwapWorkbench } = useSwapWorkbench();
+  const { crns, setSchedule } = useSchedule();
   const [pending, setPending] = useState<DemoKey | null>(null);
 
   function apply(key: DemoKey) {
     const data = query.data;
     if (!data) return;
-    if (key === "swap") {
-      setSchedule(data.swap_demo.current_crns);
-      setDemoSwapDraft({
-        currentCrns: [...data.swap_demo.current_crns],
-        dropCrn: data.swap_demo.drop_crn,
-        addCrn: data.swap_demo.add_crn,
-      });
-    } else {
-      setSchedule(data[key].crns);
-      setDemoSwapDraft(null);
-    }
+    setSchedule(data[key].crns);
     setPending(null);
   }
 
@@ -83,7 +70,6 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
   const options: { key: DemoKey; label: string }[] = [
     { key: "easy", label: data.easy.label || "Balanced schedule" },
     { key: "brutal", label: data.brutal.label || "The wall of pain" },
-    { key: "swap", label: "Swap demo" },
   ];
 
   const pendingOption = options.find((option) => option.key === pending) ?? null;
@@ -140,32 +126,6 @@ export default function DemoPicker({ title = "Start from a demo schedule" }: Dem
               Cancel
             </button>
           </div>
-        </div>
-      ) : null}
-
-      {demoSwapDraft ? (
-        <div
-          data-testid="swap-draft"
-          className="mt-3 rounded-xl border border-line bg-warm p-3 text-xs text-ink-secondary shadow-sm"
-        >
-          <p>
-            Swap demo prefilled: drop CRN{" "}
-            <span className="font-mono text-ink-primary">{demoSwapDraft.dropCrn}</span> and add CRN{" "}
-            <span className="font-mono text-ink-primary">{demoSwapDraft.addCrn}</span>.
-          </p>
-          <button
-            type="button"
-            data-testid="open-swap-from-demo"
-            onClick={() =>
-              openSwapWorkbench({
-                dropCrn: demoSwapDraft.dropCrn,
-                addCrn: demoSwapDraft.addCrn,
-              })
-            }
-            className="mt-2 rounded-lg border border-maroon bg-maroon px-3 py-1.5 text-xs font-semibold text-white"
-          >
-            Open swap comparison
-          </button>
         </div>
       ) : null}
     </div>

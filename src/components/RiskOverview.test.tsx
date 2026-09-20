@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { http, HttpResponse } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { API_BASE_URL } from "../api/client";
-import type { AnalyzeRequest, AnalyzeResponse, Section } from "../api/types";
+import type { AnalyzeRequest, Section } from "../api/types";
 import { server } from "../test/msw/server";
 import { analyzeFixture } from "../test/fixtures";
 import { ScheduleProvider, useSchedule } from "../context/ScheduleContext";
@@ -107,41 +107,6 @@ describe("RiskOverview", () => {
     expect(await screen.findByTestId("risk-score")).toBeTruthy();
   });
 
-  it("renders backend factor values unchanged, in backend order", async () => {
-    const custom: AnalyzeResponse = {
-      ...analyzeFixture,
-      risk_score: 41,
-      factors: [
-        {
-          type: "workload_collision",
-          severity: 22.0,
-          max_severity: 30.0,
-          detail: "3 heavy-workload courses: CS 3114, CS 2505, MATH 2534",
-          affected_crns: ["90002", "90001"],
-        },
-        {
-          type: "difficulty_load",
-          severity: 4.0,
-          max_severity: 10.0,
-          detail: "Credit-weighted instructor difficulty.",
-          affected_crns: ["90001"],
-        },
-      ],
-    };
-    mockAnalyze(() => HttpResponse.json(custom));
-    renderInsights("/?crns=90001,90002");
-
-    expect(await screen.findByText("Heavy-course load")).toBeTruthy();
-    expect(screen.getByText("Instructor difficulty")).toBeTruthy();
-    expect(screen.getByText("22.0")).toBeTruthy();
-    expect(screen.getByText("30.0")).toBeTruthy();
-    expect(screen.getByText("3 heavy-workload courses: CS 3114, CS 2505, MATH 2534")).toBeTruthy();
-    expect(screen.getByText("90002, 90001")).toBeTruthy();
-
-    const names = screen.getAllByText(/Heavy-course load|Instructor difficulty/).map((el) => el.textContent);
-    expect(names).toEqual(["Heavy-course load", "Instructor difficulty"]);
-  });
-
   it("renders every conflict from a structured 422 meeting-overlap error", async () => {
     mockAnalyze(() =>
       HttpResponse.json(
@@ -165,25 +130,6 @@ describe("RiskOverview", () => {
     expect(screen.getByText("90002 and 90001 overlap on Tue 09:00–09:30.")).toBeTruthy();
     expect(screen.getByText("90001 and 90002 overlap on Thu 11:00–11:30.")).toBeTruthy();
     expect(screen.getByText("The schedule contains 2 meeting overlaps.")).toBeTruthy();
-  });
-
-  it("keeps synthetic data notes and the heuristic disclaimer visible", async () => {
-    mockAnalyze(() =>
-      HttpResponse.json({
-        ...analyzeFixture,
-        meta: {
-          term_id: "2026-fall",
-          data_notes: ["CS 2505 grade data is synthetic and representative."],
-          heuristic: true,
-        },
-      }),
-    );
-    renderInsights("/?crns=90001,90002");
-
-    expect(
-      await screen.findByText("CS 2505 grade data is synthetic and representative."),
-    ).toBeTruthy();
-    expect(screen.getByText(/deterministic planning heuristic, not a prediction/i)).toBeTruthy();
   });
 
   it("renders a normalized outage state and retries on demand", async () => {

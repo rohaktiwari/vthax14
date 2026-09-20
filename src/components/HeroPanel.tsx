@@ -77,7 +77,7 @@ export default function HeroPanel({ compact = false }: HeroPanelProps) {
     <section
       aria-label="HokieLens overview"
       className={`hero-sky relative overflow-hidden rounded-2xl border border-line shadow-card-lg ${
-        hasSelection ? "min-h-40" : compact ? "min-h-44" : "min-h-[26rem] lg:min-h-[32rem]"
+        hasSelection ? "min-h-40" : compact ? "min-h-44" : "min-h-52 lg:min-h-64"
       }`}
     >
       <Skyline />

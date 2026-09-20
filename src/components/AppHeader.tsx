@@ -176,10 +176,10 @@ export default function AppHeader({ onOpenSearch }: AppHeaderProps) {
           type="button"
           onClick={handleSearchTrigger}
           aria-label="Search courses"
-          className="relative flex w-48 max-w-[44vw] items-center rounded-full border border-line bg-warm py-2 pl-9 pr-4 text-left text-sm text-ink-secondary shadow-inner transition-colors hover:border-maroon/40 hover:text-ink-primary sm:w-72"
+          className="relative flex w-48 max-w-[44vw] cursor-pointer items-center rounded-full border border-line bg-warm py-2 pl-9 pr-4 text-left text-sm font-medium text-ink-secondary shadow-sm transition-colors hover:border-maroon/40 hover:bg-soft-maroon hover:text-ink-primary sm:w-72"
         >
           <SearchIcon />
-          <span className="truncate">Search CS 2104, MATH 2534…</span>
+          <span className="truncate">Find a course</span>
         </button>
         <ApiHealthStatus />
         <AboutPopover />

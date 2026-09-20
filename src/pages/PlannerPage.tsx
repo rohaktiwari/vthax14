@@ -7,14 +7,12 @@ import SearchSidebar from "../components/SearchSidebar";
 import EmptyState from "../components/EmptyState";
 import CampusMap from "../components/CampusMap";
 import RiskOverview from "../components/RiskOverview";
-import StressTest from "../components/StressTest";
 import PrintSchedule from "../components/PrintSchedule";
 import WeeklyCalendar from "../components/WeeklyCalendar";
 import { CourseSearchProvider } from "../context/CourseSearchContext";
 import { MapSelectionProvider } from "../context/MapSelectionContext";
 import { ProfessorDrawerProvider } from "../context/ProfessorDrawerContext";
 import { ScheduleProvider } from "../context/ScheduleContext";
-import { SwapWorkbenchProvider } from "../context/SwapWorkbenchContext";
 import { ToastProvider } from "../context/ToastContext";
 
 type MobileView = "search" | "schedule" | "insights";
@@ -90,7 +88,6 @@ export default function PlannerPage() {
     <ScheduleProvider>
       <CourseSearchProvider>
       <MapSelectionProvider>
-      <SwapWorkbenchProvider>
       <ProfessorDrawerProvider>
       <ToastProvider>
       <a
@@ -117,7 +114,6 @@ export default function PlannerPage() {
             <CampusMap />
             <WeeklyCalendar showDemoPicker />
             <RiskOverview />
-            <StressTest />
           </div>
         </div>
 
@@ -129,7 +125,6 @@ export default function PlannerPage() {
             <WeeklyCalendar showDemoPicker />
           </div>
           <RiskOverview />
-          <StressTest />
           <EmptyState />
         </div>
 
@@ -146,7 +141,6 @@ export default function PlannerPage() {
           {mobileView === "insights" ? (
             <>
               <RiskOverview />
-              <StressTest />
               <EmptyState />
             </>
           ) : null}
@@ -212,7 +206,6 @@ export default function PlannerPage() {
       <PrintSchedule />
       </ToastProvider>
       </ProfessorDrawerProvider>
-      </SwapWorkbenchProvider>
       </MapSelectionProvider>
       </CourseSearchProvider>
     </ScheduleProvider>

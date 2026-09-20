@@ -4,13 +4,10 @@ import { useAnalysis } from "../api/hooks";
 import { normalizeApiError } from "../api/errors";
 import { queryKeys } from "../api/queryKeys";
 import { useSchedule } from "../context/ScheduleContext";
-import { useSwapWorkbench } from "../context/SwapWorkbenchContext";
 import { formatRiskScore, riskBand, type RiskTone } from "../lib/risk";
 import CommuteWarnings from "./CommuteWarnings";
-import DataNotes from "./DataNotes";
 import ErrorState from "./ErrorState";
 import ExpectedGpa from "./ExpectedGpa";
-import FactorBreakdown from "./FactorBreakdown";
 import Skeleton from "./Skeleton";
 
 const TONE_TEXT: Record<RiskTone, string> = {
@@ -71,7 +68,6 @@ export default function RiskOverview() {
   const { crns } = useSchedule();
   const analysis = useAnalysis(crns);
   const queryClient = useQueryClient();
-  const { openSwapWorkbench } = useSwapWorkbench();
 
   // Selected schedule changed: drop cached analyses for other CRN sets so
   // insights never show results for a schedule the URL no longer represents.
@@ -164,20 +160,10 @@ export default function RiskOverview() {
           Analysis complete. Risk score {formatRiskScore(data.risk_score)} out of 100,{" "}
           {band.label}.
         </p>
-        <button
-          type="button"
-          data-testid="improve-schedule"
-          onClick={() => openSwapWorkbench()}
-          className="mt-4 rounded-lg border border-maroon/40 bg-soft-maroon px-3.5 py-2 text-sm font-medium text-maroon shadow-sm transition-colors hover:bg-maroon/10"
-        >
-          Improve this schedule
-        </button>
       </div>
 
-      <FactorBreakdown factors={data.factors} />
       <CommuteWarnings warnings={data.commute_warnings} />
       <ExpectedGpa expectedGpa={data.expected_gpa} />
-      <DataNotes meta={data.meta} />
     </section>
   );
 }

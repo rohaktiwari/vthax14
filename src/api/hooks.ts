@@ -10,10 +10,6 @@ import type {
   CourseSearchResponse,
   DemoSchedulesResponse,
   HealthResponse,
-  StressRequest,
-  StressResponse,
-  SwapRequest,
-  SwapResponse,
   VibesResponse,
   ChatRequest,
   ChatResponse,
@@ -21,8 +17,9 @@ import type {
 } from "./types";
 
 /**
- * TanStack Query hooks for the eight documented planner endpoints, plus the
- * optional Ask Gemini chat routes (hidden from OpenAPI; default off).
+ * TanStack Query hooks for the documented planner endpoints the UI uses, plus the
+ * optional Ask Gemini chat routes (hidden from OpenAPI; default off). The backend
+ * still serves /api/swap and /api/stress; the UI no longer calls them.
  */
 
 /** GET /api/health — header status indicator and startup diagnostics. */
@@ -85,22 +82,6 @@ export function useAnalysis(crns: string[]) {
     queryFn: ({ signal }) => apiPost<AnalyzeResponse>("/analyze", { crns }, { signal }),
     enabled: crns.length >= 2 && crns.length <= MAX_CRNS,
     retry: false,
-  });
-}
-
-/** POST /api/swap — before/after comparison; caller confirms before applying. */
-export function useSwap() {
-  return useMutation({
-    mutationKey: queryKeys.swap,
-    mutationFn: (body: SwapRequest) => apiPost<SwapResponse>("/swap", body),
-  });
-}
-
-/** POST /api/stress — miss-a-week catch-up heuristic. */
-export function useStress() {
-  return useMutation({
-    mutationKey: queryKeys.stress,
-    mutationFn: (body: StressRequest) => apiPost<StressResponse>("/stress", body),
   });
 }
 

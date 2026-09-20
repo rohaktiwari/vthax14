@@ -28,11 +28,14 @@ export default function EmptyState() {
 
   return (
     <div className="rounded-2xl border border-line bg-panel p-5 shadow-card">
+      <p className="mb-3 text-sm text-ink-secondary">
+        Start here: search for a course, or load a demo week below.
+      </p>
       <ol className="grid gap-3 sm:grid-cols-3">
         {STEPS.map((step, index) => (
           <li
             key={step.title}
-            className="rounded-xl border border-line bg-warm px-4 py-3 shadow-sm transition-colors hover:border-maroon/30"
+            className="rounded-xl border border-line bg-warm px-4 py-3 shadow-sm"
           >
             <p className="flex items-center gap-2 text-sm font-semibold text-ink-primary">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-maroon text-xs font-bold text-white">

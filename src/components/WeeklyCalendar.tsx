@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import type { Meeting, Section, Weekday } from "../api/types";
 import { useSchedule } from "../context/ScheduleContext";
 import { useMapSelection } from "../context/MapSelectionContext";
-import { useSwapWorkbench } from "../context/SwapWorkbenchContext";
 import { getCourseColor } from "../lib/courseColor";
 import {
   buildTimeSlots,
@@ -151,7 +150,6 @@ function RemoveButton({ crn, onRemove }: { crn: string; onRemove: (crn: string) 
 export default function WeeklyCalendar({ showDemoPicker = false }: { showDemoPicker?: boolean } = {}) {
   const { crns, selectedSections, unavailableCrns, removeCrn } = useSchedule();
   const { highlightedCrns } = useMapSelection();
-  const { openSwapWorkbench } = useSwapWorkbench();
   const [activeKey, setActiveKey] = useState<string | null>(null);
 
   const events = useMemo(() => buildEvents(selectedSections), [selectedSections]);
@@ -394,14 +392,6 @@ export default function WeeklyCalendar({ showDemoPicker = false }: { showDemoPic
                   {section.crn} · {section.credits} cr
                 </span>
                 <span className="flex shrink-0 items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => openSwapWorkbench({ dropCrn: section.crn })}
-                    aria-label={`Compare another section for ${section.course_id} (CRN ${section.crn})`}
-                    className="rounded-md border border-line bg-panel px-2 py-0.5 text-[0.6875rem] font-semibold text-ink-primary transition-colors hover:border-maroon/40 hover:bg-soft-maroon"
-                  >
-                    Compare
-                  </button>
                   <RemoveButton crn={section.crn} onRemove={removeCrn} />
                 </span>
               </li>

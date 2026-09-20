@@ -191,12 +191,9 @@ export default function SearchSidebar({ showResults = true }: SearchSidebarProps
             checked={openOnly}
             onChange={setOpenOnly}
           />
-          <Toggle
-            id="sb-major"
-            label="Only major requirements"
-            helper="Requires degree audit data"
-            disabled
-          />
+          <p className="py-2 text-xs text-ink-secondary">
+            Degree-audit filters are not available in this demo.
+          </p>
         </div>
 
         <details className="group rounded-lg border border-line bg-warm/50">
