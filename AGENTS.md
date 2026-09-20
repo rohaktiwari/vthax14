@@ -1,55 +1,40 @@
-# HokieLens — Frontend-Only Agent Rules
+# HokieLens — Agent Rules
 
 ## Scope
 
-Work only on the browser React/Vite frontend at this repository root and frontend-owned assets, configuration, and tests.
+This repository is full stack: a React/Vite frontend at the repository root and a FastAPI backend in `backend/`. Agents may change either side.
 
-The frontend PRD is the UI and product source of truth. The backend PRD, backend source, OpenAPI output, and API samples are read-only interface references. Use them only to match documented endpoint paths, request/response schemas, status codes, error shapes, and backend-owned behavior.
+The frontend PRD (`hokielens_frontend_prd.md`) is the UI and product source of truth. The backend PRD (`hokielens_backend_prd.md`) is the source of truth for endpoint paths, request/response schemas, status codes, error shapes, and backend-owned behavior.
 
-## Absolute backend boundary
+## Backend rules
 
-Never create, edit, move, delete, format, scaffold, repair, refactor, test, run, or otherwise modify backend code or infrastructure.
+The backend owns risk, GPA, commute, swap, stress, validation, and every formula. Keep it that way.
 
-Never create or modify:
+- Run backend commands from `backend/` (`python -m pytest`, `uvicorn main:app`). `requirements.txt` at the root installs `backend/requirements.txt`.
+- The eight planner routes are a frozen contract. Do not rename them or change any request or response field. Fixture scores must stay easy **41**, brutal **84**, and the swap demo **49 → 19**.
+- The planner routes stay offline: no outbound calls, and the server never imports from `scripts/`.
+- Optional routes (`/api/chat`, `/api/chat/status`, `/.well-known/*`, `/api/explain` on `sponsors.gateway`) are hidden from OpenAPI and must not change the planner contract.
+- Ask Gemini (`POST /api/chat`) is the only route that may call Google, and only when `HOKIELENS_GEMINI=1` and `GEMINI_API_KEY` are set. The key is server-side only: never commit it, log it, or send it to the browser. Tests mock Gemini; nothing in the suite may touch the network.
+- Pipeline scripts in `backend/scripts/` are offline tools. Committed JSON under `backend/data/` is what the server loads.
+- No database, accounts, authentication, or live seat polling.
 
-- Python files or Python environments
-- FastAPI routes, Pydantic models, server code, OpenAPI files, databases, migrations, loaders, pipelines, or server-side calculations
-- `main.py`, `data.py`, `models.py`, `risk.py`, `config.py`, or `requirements.txt`
-- `data/` or `scripts/`
-- backend tests or backend fixtures
-- backend `.env` files
+## Frontend rules
 
-Do not run `python`, `pip`, `uvicorn`, `pytest`, migrations, backend formatters, backend generators, or server commands.
-
-If a backend folder appears later, it is strictly read-only.
-
-## Permitted frontend work
-
-You may create and edit only frontend files, including:
-
-- React/TypeScript source under `src/`
-- static assets under `public/`
-- frontend configuration such as `package.json`, Vite, Tailwind, ESLint, Prettier, TypeScript, and frontend `.env.example`
-- frontend tests, including MSW handlers and fixtures only under `src/test/` and Playwright tests under `tests/`
-- frontend documentation such as `README.md`
-
-MSW is allowed only for browser development and frontend tests. Never create a standalone mock API server.
-
-## Product constraints
-
-- The backend owns risk, GPA, commute, swap, stress, validation, and every formula. Format and visualize API responses; never recreate calculations in the frontend.
-- Do not invent endpoints, fields, request parameters, or backend capabilities.
+- Format and visualize API responses; never recreate backend calculations in the frontend.
+- Do not invent endpoints, fields, request parameters, or backend capabilities. Optional endpoints (`/api/chat`, `/api/chat/status`) must degrade gracefully when the backend reports them disabled.
 - Use `VITE_API_BASE_URL` for all API requests; never hardcode API hosts in application code.
-- No authentication, accounts, database, registration workflows, live seat polling, external map tiles, routing services, or generative AI chat.
+- No accounts, registration workflows, live seat polling, external map tiles, or routing services.
+- Ask Gemini is the one generative AI feature. It talks to the backend proxy only, never to Google directly.
 - Demo schedule CRNs must come from `GET /api/demo/schedules`; never hardcode them in UI components.
-- For missing or incompatible backend behavior, keep the frontend contract-correct, use in-frontend MSW where appropriate, report the mismatch, and do not repair the backend.
+- MSW is allowed only for browser development and frontend tests under `src/test/`. Never create a standalone mock API server.
+- Frontend tests live under `src/` (Vitest) and `tests/` (Playwright, run against browser fixtures).
 
 ## Workflow
 
-1. Inspect relevant frontend files and the supplied PRDs before changing code.
-2. For non-trivial work, state a short plan and list the frontend files expected to change.
-3. Implement the requested frontend phase only; do not broaden scope.
-4. Run frontend commands only, such as `npm install`, `npm run dev`, `npm run build`, `npm run lint`, Vitest, and Playwright.
-5. Report changed frontend files, commands run and their results, limitations or API-contract blockers, and this exact final line:
-
-`Backend files created or modified: none.`
+1. Inspect the relevant files and PRDs before changing code.
+2. For non-trivial work, state a short plan and list the files expected to change.
+3. Implement the requested change only; do not broaden scope.
+4. Verify with the commands that match what you touched:
+   - Frontend: `npm run build`, `npm run lint`, `npx tsc --noEmit`, Vitest, Playwright.
+   - Backend (from `backend/`): `python -m pytest`.
+5. Report changed files, commands run and their results, and any limitations or contract blockers.

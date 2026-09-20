@@ -95,8 +95,8 @@ strictly read-only.
   is bundled.
 - Share prefers the Web Share API and otherwise copies the canonical URL to the clipboard. A
   cancelled share shows no toast; an unavailability/failure shows an error toast.
-- The "Ask HokieLens" panel is deterministic: four predefined prompts answered from committed copy
-  plus the current analysis response. It is not a chatbot and makes no generative AI call.
+- Ask Gemini (see below) is optional and off unless the backend has a Gemini key. Without it the
+  chat shows a friendly fallback and every planner surface still works.
 - The Playwright suite runs against frontend-owned browser fixtures, not a live backend.
 
 ## Manual visual / regression checks
@@ -121,6 +121,20 @@ How to reproduce each state locally:
 - Conflict: choose two sections whose meetings overlap and read every conflict in the error list.
 - API error: stop the backend (or block `/api`) and confirm each surface shows a retryable error.
 
+## Ask Gemini chat
+
+The help panel is an optional chat (`src/components/AskGemini.tsx`) that talks to the backend
+proxy, never to Google directly, so the API key stays server-side.
+
+- `GET /api/chat/status` reports whether the server has a key configured (`{enabled}`).
+- `POST /api/chat` sends the question plus the current schedule CRNs. The server re-runs the
+  analysis and grounds Gemini's answer in it, so the model never invents scores or sections.
+- Both routes are hidden from OpenAPI and do not change the eight planner routes or any response
+  field. Requests are rate limited, and a missing key, quota (429), or timeout returns a normal
+  reply with a fallback notice instead of an error.
+- Enable it by setting `HOKIELENS_GEMINI=1` and `GEMINI_API_KEY` in the backend's environment; see
+  `backend/README.md` for the full contract.
+
 ## Sponsor prizes
 
 The planner UI is unchanged. Prize add-ons live in `backend/sponsors/` and are
@@ -130,8 +144,8 @@ is the two-minute script.
 - **Deloitte x Databricks:** import `backend/sponsors/databricks/HokieLens_Student_Impact.py`
   and show easy **41** vs brutal **84**, then the **49 -> 19** swap.
 - **Gemini:** `python -m sponsors.explain --fixture easy --gemini` (needs
-  `HOKIELENS_GEMINI=1` and `GEMINI_API_KEY`). Not a chatbot; it only rewrites
-  `/api/analyze` facts. Optional `POST /api/explain` exists on
+  `HOKIELENS_GEMINI=1` and `GEMINI_API_KEY`). The CLI only rewrites
+  `/api/analyze` facts; the interactive chat is Ask Gemini above. Optional `POST /api/explain` exists on
   `uvicorn sponsors.gateway:app`, not on the core API.
 - **GoDaddy ANS:** serve `GET /.well-known/agent-card.json` from `uvicorn main:app`.
   Publish the `_ans` TXT record from `backend/sponsors/ans/dns-records.example.txt`
