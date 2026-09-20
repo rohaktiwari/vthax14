@@ -17,7 +17,18 @@ function Disclaimers() {
   return (
     <footer className="shrink-0 border-t border-line bg-panel px-4 py-2 text-center text-xs text-ink-secondary">
       HokieLens is a student-built planning tool and is not an official Virginia Tech registration
-      service.
+      service.{" "}
+      <span className="whitespace-nowrap">
+        Built for VTHacks 14 ·{" "}
+        <a
+          href="https://github.com/rohaktiwari/vthax14"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-maroon underline underline-offset-2 hover:text-maroon-dark"
+        >
+          View the repo
+        </a>
+      </span>
     </footer>
   );
 }
