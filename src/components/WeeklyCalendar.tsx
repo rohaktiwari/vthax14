@@ -18,6 +18,12 @@ import {
 import { CARD } from "../lib/ui";
 import ScheduleToolbar from "./ScheduleToolbar";
 
+/** Minimum pixel height per visible hour, so course and building names are not clipped. */
+const HOUR_PX = 64;
+/** Pixel height a block needs to show the building line, then the time line. */
+const SHOW_LOCATION_PX = 36;
+const SHOW_TIME_PX = 52;
+
 interface CalendarEvent {
   key: string;
   section: Section;
@@ -51,16 +57,19 @@ interface EventButtonProps {
   event: CalendarEvent;
   rangeStart: number;
   rangeEnd: number;
+  /** Minimum rendered height of the whole grid; lets thresholds work in pixels. */
+  gridPx: number;
   active: boolean;
   highlighted: boolean;
   onOpen: (crn: string) => void;
 }
 
-function EventButton({ event, rangeStart, rangeEnd, active, highlighted, onOpen }: EventButtonProps) {
+function EventButton({ event, rangeStart, rangeEnd, gridPx, active, highlighted, onOpen }: EventButtonProps) {
   const color = getCourseColor(event.section.course_id);
   const location = meetingLocation(event.section, event.meeting);
   const timeLabel = `${formatMinutes(event.startMin)}–${formatMinutes(event.endMin)}`;
   const layout = getEventLayout(event.startMin, event.endMin, { startMin: rangeStart, endMin: rangeEnd });
+  const blockPx = (layout.heightPercent / 100) * gridPx;
   const label = `${event.section.course_id}, ${formatWeekdayShort(event.day)} ${timeLabel}, ${location}. Open details.${
     highlighted ? " Highlighted from the map." : ""
   }`;
@@ -88,8 +97,8 @@ function EventButton({ event, rangeStart, rangeEnd, active, highlighted, onOpen 
       }}
     >
       <span className="block truncate text-xs font-semibold">{event.section.course_id}</span>
-      {layout.heightPercent >= 9 ? <span className="block truncate text-xs">{location}</span> : null}
-      {layout.heightPercent >= 14 ? <span className="block truncate text-xs">{timeLabel}</span> : null}
+      {blockPx >= SHOW_LOCATION_PX ? <span className="block truncate text-xs">{location}</span> : null}
+      {blockPx >= SHOW_TIME_PX ? <span className="block truncate text-xs">{timeLabel}</span> : null}
     </button>
   );
 }
@@ -119,6 +128,7 @@ export default function WeeklyCalendar({ hydrating = false }: WeeklyCalendarProp
   const slots = useMemo(() => buildTimeSlots(range.startMin, range.endMin), [range]);
 
   const rangeSpan = Math.max(range.endMin - range.startMin, 1);
+  const gridPx = Math.max(224, Math.round((rangeSpan / 60) * HOUR_PX));
   const percent = (minutes: number) => ((minutes - range.startMin) / rangeSpan) * 100;
   const waiting = crns.length > 0 && selectedSections.length === 0 && hydrating;
   const unavailable = !waiting && crns.length > 0 && selectedSections.length === 0 && unavailableCrns.length > 0;
@@ -154,7 +164,7 @@ export default function WeeklyCalendar({ hydrating = false }: WeeklyCalendarProp
 
       {events.length > 0 ? (
         <div
-          className="flex min-h-0 flex-1 flex-col p-3"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3"
           data-testid="calendar-grid"
           data-range-start={range.startMin}
           data-range-end={range.endMin}
@@ -173,7 +183,7 @@ export default function WeeklyCalendar({ hydrating = false }: WeeklyCalendarProp
               </div>
             ))}
           </div>
-          <div className="flex min-h-[14rem] flex-1">
+          <div className="flex flex-1" style={{ minHeight: `${gridPx}px` }}>
             <div className="relative w-12 shrink-0 bg-warm/40" aria-hidden="true">
               {slots.map((minutes, index) =>
                 index % 2 === 0 ? (
@@ -208,6 +218,7 @@ export default function WeeklyCalendar({ hydrating = false }: WeeklyCalendarProp
                       event={event}
                       rangeStart={range.startMin}
                       rangeEnd={range.endMin}
+                      gridPx={gridPx}
                       active={focusedCrn === event.section.crn}
                       highlighted={highlightedCrns.includes(event.section.crn)}
                       onOpen={showCourse}
